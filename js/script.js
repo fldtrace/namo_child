@@ -44,100 +44,115 @@ function debounce( fn, threshold ) {
 	};
 
   //mgadwork: Object Instance
-	$.mgadwork = function(el, options) {
-		var work = $(el),
+	$.mgadFilterable = function(el, options) {
+		var filterable = $(el),
 		methods = {};
 
-		// Store a reference to the work object
-		$.data(el, "mgadwork", work);
+		// Store a reference to the filterable object
+		$.data(el, "mgadFilterable", filterable);
 		
 		// private methods
 		methods = {
-			// work init
+			// filterable init
 			init: function() {
-				work.breadcrumbs = $('.work-breadcrumbs', work);
-				work.grid = $('.work-grid', work);
-				work.gridcontainer = $('.work-grid-container', work);
-				work.filtercontainer = $('.work-filters-container', work);
-				work.filter = $('.work-filters', work);
-				work.tablehead = $('.work-table-head', work);
-				work.loadmore = $('.work-load-more', work);
-				work.searchinput = $('.work-search-input', work);
-				work.applyfilters = $('.apply-filters', work);
-				work.resultscount = $('.work-results-count', work);
+				filterable.breadcrumbs = $('.filterable-breadcrumbs', filterable);
+				filterable.grid = $('.filterable-grid', filterable);
+				filterable.gridcontainer = $('.filterable-grid-container', filterable);
+				filterable.filtercontainer = $('.filterable-filters-container', filterable);
+				filterable.filter = $('.filterable-filters', filterable);
+				filterable.tablehead = $('.filterable-table-head', filterable);
+				filterable.loadmore = $('.filterable-load-more', filterable);
+				filterable.searchinput = $('.filterable-search-input', filterable);
+				filterable.applyfilters = $('.apply-filters', filterable);
+				filterable.resultscount = $('.filterable-results-count', filterable);
 				
-				work.showposts = parseInt(work.data('showposts'));
+				filterable.showposts = parseInt(filterable.data('showposts'));
+				filterable.imageinlistview = filterable.hasClass('updates-filterable')?true:false;
 				
-				work.activeFilters = {};
-				work.init = 0;
+				filterable.activeFilters = {};
+				filterable.init = 0;
 				
-				work.on('click', '.apply-filters', methods.applyFilters);
-				work.on('click', '.clear-filters', methods.clearFilters);
-				work.on('click', '.work-load-more a', methods.loadWork);
+				filterable.on('click', '.apply-filters', methods.applyFilters);
+				filterable.on('click', '.clear-filters', methods.clearFilters);
+				filterable.on('click', '.filterable-load-more a', methods.loadMore);
 				
-				work.on('click', 'a[href=#]', function(){
+				filterable.on('click', 'a[href=#]', function(){
 					$(this).blur();
 				});
 						
 				methods.setup();
 				
 				// use value of search field to filter
-				work.searchinput.keyup( debounce(methods.search, 500 ) );
+				filterable.searchinput.keyup( debounce(methods.search, 500 ) );
 
-				// initial filters array (service, sector, location)
-				initial_filters = ['.wkitem', '', ''];
+				hash = window.location.hash.substring(1);
+				
+				hash_filters = hash.split(':');
+				
+				// initial filters array (lv1, lv2, lv3)
+				initial_filters = ['.ftitem', '', ''];
+				
+				if (hash_filters[0]) initial_filters[0] = '.' + hash_filters[0];
+				if (hash_filters[1]) initial_filters[1] = '.' + hash_filters[1];
+				if (hash_filters[2]) initial_filters[2] = '.' + hash_filters[2];
+				
 
-				work.filter.find('.current_choice').removeClass('current_choice');
-				work.filter.find('.filter-service[data-filter="'+initial_filters[0]+'"]').trigger( 'click', [ true ] )
-					.siblings('.location-filters').find('a[data-filter="'+initial_filters[1]+'"]').trigger( 'click')
-					.siblings('.location-filters').find('a[data-filter="'+initial_filters[2]+'"]').trigger( 'click');
+				filterable.filter.find('.current_choice').removeClass('current_choice');
+				filterable.filter.find('.filter-lv1[data-filter="'+initial_filters[0]+'"]').trigger( 'click', [ true ] )
+					.siblings('.lv2-filters').find('a[data-filter="'+initial_filters[1]+'"]').trigger( 'click')
+					.siblings('.lv3-filters').find('a[data-filter="'+initial_filters[2]+'"]').trigger( 'click');
 					
-				work.applyfilters.click();
+				filterable.applyfilters.click();
 			},			
-			// update work breadcrumbs content when new filters are applied
+			// update filterable breadcrumbs content when new filters are applied
 			updateBreadcrumbs: function() {
-				$current_service = work.filter.find('.filter-service.current_choice');
+				$current_lv1 = filterable.filter.find('.filter-lv1.current_choice');
 				
 				breadcrumbs = '';
 				
-				if ($current_service.length) {
-					breadcrumbs += '<span><a class="breadcrumb-service" href="#">'+$current_service.text()+'</a><i class="icon-right-open"></i></span>';
+				if ($current_lv1.length) {
+					breadcrumbs += '<span><a class="breadcrumb-lv1" href="#">'+$current_lv1.text()+'</a><i class="icon-right-open"></i></span>';
 					
-					$current_sector = $current_service.siblings('.sector-filters').find('.current_choice');
-					if ($current_sector && $current_sector.data('filter')) {
-						breadcrumbs += '<span><a class="breadcrumb-sector" href="#">'+$current_sector.text()+'</a><i class="icon-right-open"></i></span>';
+					$current_lv2 = $current_lv1.siblings('.lv2-filters').find('.current_choice');
+					if ($current_lv2 && $current_lv2.data('filter')) {
+						breadcrumbs += '<span><a class="breadcrumb-lv2" href="#">'+$current_lv2.text()+'</a><i class="icon-right-open"></i></span>';
 					}
 					
-					$current_location = $current_service.siblings('.location-filters').find('.current_choice');
-					if ($current_location && $current_location.data('filter')) {
-						breadcrumbs += '<span><a class="breadcrumb-current_location" href="#">'+$current_location.text()+'</a><i class="icon-right-open"></i></span>';
+					$current_lv3 = $current_lv1.siblings('.lv3-filters').find('.current_choice');
+					if ($current_lv3 && $current_lv3.data('filter')) {
+						breadcrumbs += '<span><a class="breadcrumb-current_lv3" href="#">'+$current_lv3.text()+'</a><i class="icon-right-open"></i></span>';
 					}
 				}
 				
-				work.breadcrumbs.html(breadcrumbs);
+				filterable.breadcrumbs.html(breadcrumbs);
 			},
-			// update search part of work breadcrumbs when new search is applied
+			// update search part of filterable breadcrumbs when new search is applied
 			updateBreadcrumbsSearch: function() {
-				if (work.searchinput.val()) {
-					work.breadcrumbs.find('.breadcrumb-search').remove();
-					work.breadcrumbs.append('<a class="breadcrumb-search" href="#">Search Results for: '+work.searchinput.val()+'</a>');			
+				if (filterable.searchinput.val()) {
+					filterable.breadcrumbs.find('.breadcrumb-search').remove();
+					filterable.breadcrumbs.append('<a class="breadcrumb-search" href="#">Search Results for: '+filterable.searchinput.val()+'</a>');			
 				}
 				else {
-					work.breadcrumbs.find('.breadcrumb-search').remove();
+					filterable.breadcrumbs.find('.breadcrumb-search').remove();
 				}
 			},
-			// load more work when new filters are applied OR "load more" button is clicked
-			loadWork: function(loadmore = true) {
-				filterClasses = work.filterClasses;
+			// load more filterable when new filters are applied OR "load more" button is clicked
+			loadMore: function(required) {
+				required = typeof required !== 'undefined' ? required : true;
+				
+				// hide load more button
+				filterable.loadmore.addClass('hidden');
+				
+				filterClasses = filterable.filterClasses;
 
 				// get all filtered item (without search)
-				$filteredItems_temp = work.grid.children(filterClasses);
+				$filteredItems_temp = filterable.grid.children(filterClasses);
 				
 				$filteredItems = $();
 				
 				// if search input is not empty, filter the search results from the filtered items
-				if (work.searchinput.val()) {
-					qsRegex = new RegExp( work.searchinput.val(), 'gi' );
+				if (filterable.searchinput.val()) {
+					qsRegex = new RegExp( filterable.searchinput.val(), 'gi' );
 					count = 0;
 					$filteredItems_temp.each(function(){
 						if (qsRegex ? $(this).text().match( qsRegex ) : true) $filteredItems = $filteredItems.add($(this));
@@ -146,27 +161,31 @@ function debounce( fn, threshold ) {
 				else 
 					$filteredItems = $filteredItems_temp;
 				
-				// update work result count
-				work.resultscount.html($filteredItems.length + ' Results');
+				// update filterable result count
+				filterable.resultscount.html($filteredItems.length + ' Results');
+
 
 				// return if the current view is "list" because all filtered items are shown (no need to load more)
-				if (work.view == 'list') return;
-				
+				if (filterable.view == 'list' && !filterable.imageinlistview) return;
+			
 				// find filtered and hidden items
 				$hiddenItems = $filteredItems.filter(':not(.loaded)');
 				
+				if ($hiddenItems.length == 0) return;
+				
 				// calculate if need to load more items
-				// if number of loaded items are less than one page
-				if ($filteredItems.filter('.loaded').length < work.showposts) 
-					loadposts = work.showposts - $filteredItems.filter('.loaded').length;
 				// if load more is clicked (not automatic load more)
-				else if (loadmore)
-					loadposts = work.showposts;
+				if (required)
+					loadposts = $hiddenItems.length;
+				// if number of loaded items are less than one page
+				else if ($filteredItems.filter('.loaded').length < filterable.showposts) 
+					loadposts = filterable.showposts - $filteredItems.filter('.loaded').length;
 				// if automatic load more and number of loaded items are already more than one page
 				else 
 					loadposts = 0;
 				
-				work.loadmore.addClass('hidden');
+				filterable.loadmore.addClass('hidden');
+				
 				
 				if (loadposts) {
 					$('.page-loader').css('display', 'block');
@@ -175,7 +194,7 @@ function debounce( fn, threshold ) {
 					$hiddenItems.filter(':lt('+loadposts+')').each(function(){
 						var $this = $(this);
 						if (!$this.hasClass('loaded')) {
-							$img = $this.find('.wkitem-img');
+							$img = $this.find('.ftitem-img');
 							$img.attr('src', $img.data('src'))
 								.attr('data-src','');
 						}
@@ -183,19 +202,19 @@ function debounce( fn, threshold ) {
 						var $this = $(this);
 						$this.addClass('loaded');
 						
-						work.grid.isotope();
+						filterable.grid.isotope();
 						
 						$('.page-loader').css('display', 'none');
 						
 						// if there are more hidden (unloaded) items
 						if ($hiddenItems.length > loadposts) {
-							work.loadmore.find('a').html('Load '+($hiddenItems.length - loadposts)+' More').end().removeClass('hidden');;
+							filterable.loadmore.find('a').html('Load '+($hiddenItems.length - loadposts)+' More').end().removeClass('hidden');;
 						}			
 					});
 				}
 				else {
 					if ($hiddenItems.length > loadposts) {
-						work.loadmore.find('a').html('Load '+($hiddenItems.length - loadposts)+' More').end().removeClass('hidden');;
+						filterable.loadmore.find('a').html('Load '+($hiddenItems.length - loadposts)+' More').end().removeClass('hidden');;
 					}			
 				}
 			},
@@ -204,73 +223,77 @@ function debounce( fn, threshold ) {
 				e.preventDefault();
 				
 				// reset/empty search input
-				work.searchinput.val('');
+				filterable.searchinput.val('');
 				
 				// find selected filters
-				current_service = work.activeFilters.service;
-				current_location = work.activeFilters.location;
-				current_sector = work.activeFilters.sector;
-				filterClasses = current_service + current_location + current_sector;
+				current_lv1 = filterable.activeFilters.lv1;
+				current_lv3 = filterable.activeFilters.lv3;
+				current_lv2 = filterable.activeFilters.lv2;
+				filterClasses = current_lv1 + current_lv3 + current_lv2;
 				
 				// if no filters selected, show all items
-				if (!filterClasses) filterClasses = '.wkitem';
+				if (!filterClasses) filterClasses = '.ftitem';
 				
 				// assign new current filter
-				work.filterClasses = filterClasses;
+				filterable.filterClasses = filterClasses;
 				
-				// if workgrid is not initiated
-				if (!work.init) {
-					work.grid.isotope({
-						itemSelector : '.wkitem',
+				// if filterablegrid is not initiated
+				if (!filterable.init) {
+					filterable.grid.isotope({
+						itemSelector : '.ftitem',
 						filter: function() {
-							matched = $(this).is(work.filterClasses + (work.view=='list'?'':'.loaded'));
+							matched = $(this).is(filterable.filterClasses + (filterable.view=='list'?'':'.loaded'));
 							
 							// filter by search string
-							if (matched && work.searchinput.val()) {
-								qsRegex = new RegExp( work.searchinput.val(), 'gi' );
+							if (matched && filterable.searchinput.val()) {
+								qsRegex = new RegExp( filterable.searchinput.val(), 'gi' );
 								matched = (qsRegex ? $(this).text().match( qsRegex ) : true);
 							}
 							
 							return matched;
 						},
-						sortBy: work.view=='list'?work.orderby:'original-order',
-						sortAscending: work.view=='list'?work.order=='asc':true,
+						sortBy: filterable.view=='list'?filterable.orderby:'original-order',
+						sortAscending: filterable.view=='list'?filterable.order=='asc':true,
 						getSortData: {
 							// fields used for search
 							title: function( itemElem ) {
-								var title = $( itemElem ).find('.wkitem-title').text().toLowerCase();
+								var title = $( itemElem ).find('.ftitem-title').text().toLowerCase();
 								return title;
 							},
-							service: function( itemElem ) {
-								var service = $( itemElem ).find('.wkitem-service').text().toLowerCase();
-								service = service==''?'~':service;
-								return service;
+							lv1: function( itemElem ) {
+								var lv1 = $( itemElem ).find('.ftitem-lv1').text().toLowerCase();
+								lv1 = lv1==''?'~':lv1;
+								return lv1;
 							},
-							location: function( itemElem ) {
-								var location = $( itemElem ).find('.wkitem-location').text().toLowerCase();
-								location = location==''?'~':location;
-								return location;
+							lv3: function( itemElem ) {
+								var lv3 = $( itemElem ).find('.ftitem-lv3').text().toLowerCase();
+								lv3 = lv3==''?'~':lv3;
+								return lv3;
 							}
 						}
 					});
-					work.init = 1;
+					filterable.init = 1;
+					
+					// load more items if needed 
+					methods.loadMore(false);
 				}
-				// if workgrid is already initiated, just refilter/resort
+				// if filterablegrid is already initiated, just refilter/resort
 				else {
-					work.grid.isotope();
+					filterable.grid.isotope();
+					
+					// load more items if needed 
+					methods.loadMore(filterable.imageinlistview);
 				}
 				
-				// update breadcrumbs and load more work if needed 
+				// update breadcrumbs 
 				methods.updateBreadcrumbs();
-
-				methods.loadWork(false);
 			},
 			
 			// clear filters, remove all selected classes, reset data and trigger click on apply filters 
 			clearFilters: function(e) {
 				e.preventDefault();
-				work.filter.find('.featured').click();
-				work.applyfilters.click();
+				filterable.filter.find('.featured').click();
+				filterable.applyfilters.click();
 			},
 			
 			
@@ -278,23 +301,26 @@ function debounce( fn, threshold ) {
 			setup: function() {
 				
 				// collapse/expand filter panel
-				work.on('click', '.toggle-filters', function() {
-					work.filtercontainer.toggleClass('expanded');
+				filterable.on('click', '.toggle-filters', function() {
+					filterable.filtercontainer.slideToggle();
 					$(this).toggleClass('expanded');
 				});
 				
 				//select filter
-				work.on('click', '.filter', function(reset=false) {
+				filterable.on('click', '.filter', function(e, reset) {
 					var $this = jQuery(this);
 					
+					reset = typeof reset !== 'undefined' ? reset : false;
+	
 					// "reset" means scripted click, not real user click
 					if (!reset) {
+						
 						if ($(document.body).hasClass('mobile')) {
 							if ($this.hasClass('current_choice')) {
-								work.filter.toggleClass('showservices');
+								filterable.filter.toggleClass('showlv1');
 							}
 							else {
-								work.filter.removeClass('showservices');
+								filterable.filter.removeClass('showlv1');
 							}
 						}
 						// return if it's a real mouse click and this filter is already active
@@ -302,123 +328,136 @@ function debounce( fn, threshold ) {
 					}
 					
 					// set selected filter classes and data
-					if ($this.closest('.sector-filters').length) {
-						work.filter.find('.sector-filters .current_choice').removeClass('current_choice');
-						work.activeFilters.sector = $this.attr('data-filter');
+					if ($this.closest('.lv2-filters').length) {
+						filterable.filter.find('.lv2-filters .current_choice').removeClass('current_choice');
+						filterable.activeFilters.lv2 = $this.attr('data-filter');
 					}
-					else if ($this.closest('.location-filters').length) {
-						work.filter.find('.location-filters .current_choice').removeClass('current_choice');
-						work.activeFilters.location = $this.attr('data-filter');
+					else if ($this.closest('.lv3-filters').length) {
+						filterable.filter.find('.lv3-filters .current_choice').removeClass('current_choice');
+						filterable.activeFilters.lv3 = $this.attr('data-filter');
 					}
 					else {
-						work.activeFilters.service = $this.attr('data-filter');
-						work.activeFilters.sector = '';
-						work.activeFilters.location = '';
+						filterable.activeFilters.lv1 = $this.attr('data-filter');
+						filterable.activeFilters.lv2 = '';
+						filterable.activeFilters.lv3 = '';
 
-						work.filter.find('.current_choice').removeClass('current_choice');
+						filterable.filter.find('.current_choice').removeClass('current_choice');
 						
-						$this.siblings('.location-filters').find('.filter:eq(0)').addClass('current_choice');
-						$this.siblings('.sector-filters').find('.filter:eq(0)').addClass('current_choice');
+						$this.siblings('.lv3-filters').find('.filter:eq(0)').addClass('current_choice');
+						$this.siblings('.lv2-filters').find('.filter:eq(0)').addClass('current_choice');
 					}
 							
 					$this.addClass('current_choice');
 				});
 			
 				// view switch (list/grid)
-				work.on('click', '.work-view-button', function() {
+				filterable.on('click', '.filterable-view-button', function() {
 					if ($(this).hasClass('is-active')) return;
 					
-					if (work.gridcontainer.hasClass('view-list')) {
-						work.gridcontainer.removeClass('view-list');
-						work.view = 'grid';
-						work.grid.isotope({
+					if (filterable.gridcontainer.hasClass('view-list')) {
+						filterable.gridcontainer.removeClass('view-list');
+						filterable.view = 'grid';
+						filterable.grid.isotope({
 							sortBy: 'original-order',
 							sortAscending: true
 						});
-						methods.loadWork(false);
+						methods.loadMore(false);
 					}
 					else {
-						work.gridcontainer.addClass('view-list');
-						work.view = 'list';
+						filterable.gridcontainer.addClass('view-list');
+						filterable.view = 'list';
 						
-						work.grid.isotope({
-							sortBy: work.orderby,
-							sortAscending: work.order=='asc'
+						filterable.grid.isotope({
+							sortBy: filterable.orderby,
+							sortAscending: filterable.order=='asc'
 						});
 						
-						work.loadmore.addClass('hidden');
+						methods.loadMore(true);
+						filterable.loadmore.addClass('hidden');
 					}
 					
-					$(this).addClass('is-active').siblings('.work-view-button').removeClass('is-active');
+					$(this).addClass('is-active').siblings('.filterable-view-button').removeClass('is-active');
 				});
 				
 				// show/hide search input
-				work.on('click', '.work-search a', function(){
-					if ($(this).parent().toggleClass('is-active').hasClass('is-active')) work.searchinput.focus();
+				filterable.on('click', '.filterable-search a', function(e){
+					if ($(this).parent().toggleClass('is-active').hasClass('is-active')) {
+						filterable.searchinput.focus();
+						$(document).on('click.searchactivated', function(e){
+							if (!$(e.target).closest('.filterable-search').length) {
+								$(document).off('click.searchactivated');
+								filterable.searchinput.parent().removeClass('is-active');
+							}
+						});						
+					}
+					else {
+						$(document).off('click.searchactivated');
+					}
 				});
+
 				
 				// sort in list view
-				work.on('click', '.sort', function(){
+				filterable.on('click', '.sort', function(){
 					orderby = $(this).data('orderby');
 					
 					if (!$(this).hasClass('asc')) {
 						asc = true;
 						
-						work.tablehead.find('.sort').removeClass('desc asc');
+						filterable.tablehead.find('.sort').removeClass('desc asc');
 						$(this).addClass('asc');
 					}
 					else {
 						asc = false;
 						
-						work.tablehead.find('.sort').removeClass('desc asc');
+						filterable.tablehead.find('.sort').removeClass('desc asc');
 						$(this).addClass('desc');
 					}
 					
-					work.orderby = orderby;
-					work.order = asc?'asc':'desc';
+					filterable.orderby = orderby;
+					filterable.order = asc?'asc':'desc';
 					
-					work.grid.isotope({
-						sortBy: work.orderby,
-						sortAscending: work.order=='asc'
+					filterable.grid.isotope({
+						sortBy: filterable.orderby,
+						sortAscending: filterable.order=='asc'
 					});
 				});
 				
-				// filter when a filter link in list view is clicked
-				work.on('click', '.wkitem-filter', function(){
-					// if service filter
-					if ($(this).parent().hasClass('wkitem-service')) {
-						service_filter = $(this).data('filter');
+				// filter when a filter link in the list view is clicked
+				filterable.on('click', '.ftitem-filter', function(){
+					// if lv1 filter
+					if ($(this).hasClass('ftitem-filter-lv1')) {
+						lv1_filter = $(this).data('filter');
 						
-						work.filter.find('.current_choice').removeClass('current_choice');
-						work.filter.find('.filter-service[data-filter="'+service_filter+'"]').trigger( 'click', [ true ] );
+						filterable.filter.find('.current_choice').removeClass('current_choice');
+						filterable.filter.find('.filter-lv1[data-filter="'+lv1_filter+'"]').trigger( 'click', [ true ] );
 					}
-					// if sector filter
-					else if ($(this).parent().hasClass('wkitem-sectors')) {
-						service_filter = $(this).parent().siblings('.wkitem-service').find('.wkitem-filter').data('filter');
-						sector_filter = $(this).data('filter');
+					// if lv2 filter
+					else if ($(this).hasClass('ftitem-filter-lv2')) {
+						lv1_filter = $(this).closest('.ftitem').find('.ftitem-filter-lv1').data('filter');
+						lv2_filter = $(this).data('filter');
 						
-						work.filter.find('.current_choice').removeClass('current_choice');
-						work.filter.find('.filter-service[data-filter="'+service_filter+'"]').trigger( 'click', [ true ] )
-							.siblings('.sector-filters').find('a[data-filter="'+sector_filter+'"]').trigger( 'click', [ true ]);
+						filterable.filter.find('.current_choice').removeClass('current_choice');
+						filterable.filter.find('.filter-lv1[data-filter="'+lv1_filter+'"]').trigger( 'click', [ true ] )
+							.siblings('.lv2-filters').find('a[data-filter="'+lv2_filter+'"]').trigger( 'click', [ true ]);
 					}
-					// if location filter
-					else if ($(this).parent().hasClass('wkitem-location')) {
-						service_filter = $(this).parent().siblings('.wkitem-service').find('.wkitem-filter').data('filter');
-						location_filter = $(this).data('filter');
+					// if lv3 filter
+					else if ($(this).parent().hasClass('ftitem-filter-lv3')) {
+						lv1_filter = $(this).closest('.ftitem').find('.ftitem-filter-lv1').data('filter');
+						lv3_filter = $(this).data('filter');
 						
-						work.filter.find('.current_choice').removeClass('current_choice');
-						work.filter.find('.filter-service[data-filter="'+service_filter+'"]').trigger( 'click', [ true ] )
-							.siblings('.location-filters').find('a[data-filter="'+location_filter+'"]').trigger( 'click', [ true ]);
+						filterable.filter.find('.current_choice').removeClass('current_choice');
+						filterable.filter.find('.filter-lv1[data-filter="'+lv1_filter+'"]').trigger( 'click', [ true ] )
+							.siblings('.lv3-filters').find('a[data-filter="'+lv3_filter+'"]').trigger( 'click', [ true ]);
 					}
 					
-					work.applyfilters.click();
+					filterable.applyfilters.click();
 				});
 			},
 			// search within results
 			search: function() {
-				work.grid.isotope();
+				filterable.grid.isotope();
 				methods.updateBreadcrumbsSearch();
-				methods.loadWork(false);
+				methods.loadMore(filterable.imageinlistview);
 			}
 
 		};
@@ -426,11 +465,11 @@ function debounce( fn, threshold ) {
 		methods.init();
 	};
 	
-	$.fn.mgadwork = function(options) {
+	$.fn.mgadFilterable = function(options) {
 		return this.each(function() {
 			var $this = $(this);
-			if ($this.data('mgadwork') === undefined) {
-				new $.mgadwork(this, options);
+			if ($this.data('mgadFilterable') === undefined) {
+				new $.mgadFilterable(this, options);
 			}
 		});
 	};
@@ -559,11 +598,14 @@ function debounce( fn, threshold ) {
 		}
 	});
 	
-	if ($(window).width() < 768) $(document.body).addClass('mobile');
+	if ($(window).width() < 768) $('body').addClass('mobile');
 	
 	
-	// init work filter
-	$('.work-container').mgadwork();
+	
+	
+	
+	// init filterable filter
+	$('.filterable-container').mgadFilterable();
 	
 
 	
@@ -605,9 +647,26 @@ function debounce( fn, threshold ) {
 	});
 
 
+	if ($(window).width() < 768) {
+		$('.recent-posts').wrap('<div class="flexslider-wrap"></div>').addClass('flexslider').wrapInner('<ul class="slides"></ul>')
+			.find('.rc-item').wrap('<li></li>');
+	}
+	
+	
 
 	$(window).load(function(){
-
+		
+		// initiate recent posts slider
+		if ($(window).width() < 768) {
+			$('.recent-posts').flexslider({
+				animation: "slide",
+				animationSpeed: 600, 
+				slideshow: true,
+				slideshowSpeed: 7000, 
+				directionNav: false
+			});
+		}
+	
 		// initiate project feature slider
 		if ($('.project-feature .slides > li').length >1) {
 			$('.project-feature .flexslider').flexslider({

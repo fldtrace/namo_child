@@ -269,7 +269,7 @@ function register_cpt_team_manager() {
 		'query_var' => true,
 		'can_export' => true,
 		'rewrite' => array(
-			'slug' => 'team-details',
+			'slug' => 'people',
 			'with_front' => true,
 			'feeds' => false,
 			'pages' => false

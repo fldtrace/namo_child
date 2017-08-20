@@ -76,7 +76,7 @@ while (have_posts() ) : the_post();
 						</div>
 					</div>
 					<div class="be-section clearfix project-details">
-						<div class="be-row clearfix zero-bottom be-no-space">
+						<div class="be-row be-wide-wrap clearfix zero-bottom be-no-space">
 							<div class="one-fourth column-block be-column-pad">
 								<h1 class="project-title-1"><?php the_title();?></h1>
 								<?php mgad_print($project_title_2,'<h2 class="project-title-2">','</h2>');?>
@@ -132,7 +132,7 @@ while (have_posts() ) : the_post();
 						
 						<?php 
 						if ($feature_section) : ?>
-							<div class="be-row clearfix zero-bottom be-no-space project-feature-section">
+							<div class="be-row be-wide-wrap clearfix zero-bottom be-no-space project-feature-section">
 								<?php mgad_print($feature_quote, '<div class="one-fourth column-block be-column-pad"><div class="project-feature-quote">', '</div></div>');?>
 								<div class="<?php echo $feature_quote?'three-fourth':'one-col';?> column-block">
 									<div class="project-feature flexslider-wrap">
@@ -244,7 +244,7 @@ while (have_posts() ) : the_post();
 									<?php _e('Related Projects');?>
 								</div>
 							</div>
-							<div class="be-row be-wrap-sp clearfix zero-bottom be-no-space rp-list">
+							<div class="be-row be-wide-wrap clearfix zero-bottom be-no-space rp-list">
 								<div class="one-fourth column-block rp-project-titles expanded">
 									<i class="icon-down-open"></i>
 									<ul>
@@ -288,7 +288,7 @@ while (have_posts() ) : the_post();
 													?>
 												</div>
 												<div class="rp-project-link">
-													<div class="rp-project-title-2"><?php echo get_field('project_title_2', $related_project);?></div>
+													<div class="rp-project-title-2"><?php echo get_field('project_tagline', $related_project);?></div>
 													<a class="be-button mediumbtn redbtn" href="<?php echo get_permalink($related_project);?>">See More</a>
 												</div>
 											</li>
@@ -382,12 +382,15 @@ while (have_posts() ) : the_post();
 								$img_id = get_post_thumbnail_id($post_id);
 								
 								$img = wp_get_attachment_image_src( $img_id, 'news-thumbnail');
+								
+								$permalink = get_permalink($post_id);
 								?>
 								<div class="one-fourth column-block clearfix">
 									<div class="rc-item">
-										<a class="rc-item-img" href="<?php echo get_permalink($post_id);?>"><img src="<?php echo $img[0];?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt=""></a>
-										<a class="rc-item-cat" href="<?php echo get_category_link($cat->term_id);?>"><?php echo $cat->name;?></a><br/>
-										<a class="rc-item-title" href="<?php echo get_permalink($post_id);?>"><?php echo get_the_title($post_id);?></a>
+										<a class="rc-item-img" href="<?php echo $permalink;?>"><img src="<?php echo $img[0];?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt=""></a>
+										<a class="rc-item-cat" href="<?php echo get_category_link($cat->term_id);?>"><?php echo $cat->name;?></a>
+										<div class="clear"></div>
+										<a class="rc-item-title" href="<?php echo $permalink;?>"><?php echo get_the_title($post_id);?></a>
 									</div>
 								</div>
 								<?php

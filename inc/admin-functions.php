@@ -25,6 +25,7 @@ function mgad_admin_footer_function() {
 		#portfolio_typechecklist .wpseo-is-primary-term {
 			display: none;
 		}
+		
 		</style>
 		<script>
 		jQuery(document).ready(function($) {
@@ -33,7 +34,7 @@ function mgad_admin_footer_function() {
 					$(this).closest('li').siblings('li').find('input[type=checkbox]').prop('checked', false);
 					
 					// automatically choose project form (Architecture/Product) based on the chosen service 
-					if (['373', '374', '375'].indexOf($('input[type=checkbox]:checked', '#portfolio_servicechecklist').val())!= -1) {
+					if (['359', '372', '374'].indexOf($('input[type=checkbox]:checked', '#portfolio_servicechecklist').val())!= -1) {
 						$('#acf-field-project_form-1').prop('checked', true);
 					}
 					else {
@@ -92,9 +93,24 @@ function mgad_ajax_get_filters_by_service() {
 	
 	
 	// only show "Types" for "Graphics & branding" service
-	if ($_POST['service'] == '377')
+	if ($_POST['service'] == '367')
 		$result['types'] = 1; 
 	
 	echo json_encode($result);
 	die();
+}
+
+
+/* 
+	FIX DROPDOWNS OF WYSIWYG EDITOR IN THE PAGE BUILDER 
+*/
+add_action('admin_head', 'mgad_fix_admin_dropdowns');
+function mgad_fix_admin_dropdowns() {
+ 	?>
+	<style>
+	.post-php .ui-dialog.ui-widget {
+		z-index: 10100 !important;
+	}
+	</style>
+	<?php
 }

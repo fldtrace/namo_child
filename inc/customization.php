@@ -141,16 +141,27 @@ if ( !function_exists( 'be_themes_get_header_logo_image' ) ) {
 	}
 }
 
-// add class name to "section" shortcode
+// customize shortcodes options
 add_action('init','mgad_shortcodes_init', 11);
 function mgad_shortcodes_init() {
 	global $be_shortcode;
+	
+	// add class name to "section" shortcode
 	$be_shortcode['section']['options']['section_class'] = array (
-				'title'=> __('Section Class','be-themes'),
-				'type'=> 'text',
-				'default'=> ''
-			);
+		'title'=> __('Section Class','be-themes'),
+		'type'=> 'text',
+		'default'=> ''
+	);	
+
+	// add wide wrap option to "row" shortcode
+	$be_shortcode['row']['options']['wide_wrap'] = array (
+		'title'=> __('Wide Wrap (1280px) ?','be-themes'),
+		'type'=> 'checkbox',
+		'default'=> ''
+	);		
 }
+
+
 
 /**************************************
 			SECTION -- Customized to add class name
@@ -259,6 +270,29 @@ if (!function_exists('be_section')) {
 	add_shortcode( 'section', 'be_section' );
 }
 
+/**************************************
+	ROW -- Customized to add wide wrap option
+**************************************/
+if (!function_exists('be_row')) {
+	function be_row( $atts, $content ) {
+		extract( shortcode_atts( array(
+	        'no_wrapper'=>0,
+	        'no_margin_bottom'=>0,
+	        'no_space_columns'=>0,
+					'wide_wrap'=>0
+	    ),$atts ) );
+		$class = 'be-wrap ';
+		$class = ( isset( $no_wrapper ) &&  1 == $no_wrapper ) ? '' : $class ;
+	    $class .= ( isset( $no_margin_bottom ) &&  1 == $no_margin_bottom ) ? ' zero-bottom' : '' ;
+	    $class .= ( isset( $no_space_columns ) &&  1 == $no_space_columns ) ? ' be-no-space' : '' ;
+			$class .= ( isset( $wide_wrap ) &&  1 == $wide_wrap ) ? ' be-wide-wrap' : '' ;
+		
+		return '<div class="be-row clearfix '.$class.'">'.do_shortcode( $content ).'</div>';
+	}
+	add_shortcode( 'row','be_row' );
+}
+
+
 
 add_filter('relevanssi_orderby', 'rlv_fix_orderby');
 function rlv_fix_orderby($orderby) {
@@ -271,13 +305,11 @@ function rlv_fix_order($order) {
 }
 
 
-add_action('admin_head', 'mgad_fix_admin_dropdowns');
-function mgad_fix_admin_dropdowns() {
- 	?>
-	<style>
-	.ui-dialog.ui-widget {
-		z-index: 10100 !important;
-	}
-	</style>
-	<?php
-}
+
+/* 
+	REMOVE AUTOMATICALLY INSERTED "READ MORE" LINK IN POST EXCERPTS 
+*/
+function be_excerpt_more($output) {}
+
+
+
