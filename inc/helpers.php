@@ -255,3 +255,12 @@ function mgad_get_profile_related_updates($posts_num = 4) {
 	
 	return $post_ids;	
 }
+
+
+add_filter('acf/fields/post_object/result/name=focus', 'mgad_acf_post_object_customize', 10, 4);
+add_filter('acf/fields/relationship/result', 'mgad_acf_post_object_customize', 10, 4);
+function mgad_acf_post_object_customize($title, $p, $field, $post) {
+	$title_2 = get_field('project_title_2', $p->ID);
+	if ($title_2) $title .= ' - ' . $title_2;
+	return $title;
+}
