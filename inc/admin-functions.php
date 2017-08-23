@@ -10,63 +10,80 @@ function mgad_admin_footer_function() {
 	if( is_object( $screen ) && $screen->post_type == 'project' ){
 		?>
 		<style>
-		#portfolio_locationdiv,
-		#portfolio_typediv {
+		#project_sectordiv,
+		#project_locationdiv {
 			display: none;
 		}
-		#portfolio_sectorchecklist li {
+		#project_sectorchecklist li {
 			display: none;
 		}
-		#portfolio_sectorchecklist .wpseo-make-primary-term, 
-		#portfolio_sectorchecklist .wpseo-is-primary-term, 
-		#portfolio_servicechecklist .wpseo-make-primary-term,
-		#portfolio_servicechecklist .wpseo-is-primary-term,
-		#portfolio_typechecklist .wpseo-make-primary-term,
-		#portfolio_typechecklist .wpseo-is-primary-term {
+		#project_locationchecklist .wpseo-make-primary-term, 
+		#project_locationchecklist .wpseo-is-primary-term, 
+		#project_sectorchecklist .wpseo-make-primary-term, 
+		#project_sectorchecklist .wpseo-is-primary-term, 
+		#project_servicechecklist .wpseo-make-primary-term,
+		#project_servicechecklist .wpseo-is-primary-term {
 			display: none;
 		}
-		
+		#project_servicediv .service-notice {
+			font-size: 13px;
+			font-weight: 400;
+		}
 		</style>
 		<script>
 		jQuery(document).ready(function($) {
-				$("#portfolio_servicechecklist input[type=checkbox]").change(function(){
-					// only allow one service, when user checks a service, automatically uncheck others
-					$(this).closest('li').siblings('li').find('input[type=checkbox]').prop('checked', false);
+			$('#project_servicediv .ui-sortable-handle').append('<br><span class="service-notice">(Notice: A project should belongs to only one service)</span>');
+			
+			$("#project_servicechecklist input[type=checkbox]").change(function(){
+				// only allow one service, when user checks a service, automatically uncheck others
+				if ($(this).closest('li').siblings('li').find('input:checked').length) {
+					alert('A project should have only one service. \nPlease uncheck the previously checked service first!');
+					$(this).prop('checked', false);
+					return;
+				}
+				
+				// automatically choose project form (Architecture/Product) based on the chosen service 
+				if (['359', '372', '374'].indexOf($('input[type=checkbox]:checked', '#project_servicechecklist').val())!= -1) {
+					$('#acf-field-project_form-1').prop('checked', true);
+				}
+				else {
+					$('#acf-field-project_form-2').prop('checked', true);
+				}
 					
-					// automatically choose project form (Architecture/Product) based on the chosen service 
-					if (['359', '372', '374'].indexOf($('input[type=checkbox]:checked', '#portfolio_servicechecklist').val())!= -1) {
-						$('#acf-field-project_form-1').prop('checked', true);
-					}
-					else {
-						$('#acf-field-project_form-2').prop('checked', true);
-					}
-						
-					// show/hide sectors, locations and types depending on the chosen service
-					$.ajax({
-						type: 'POST',
-						url: ajaxurl,
-						dataType: 'json',
-						data: {"action": "get_filters_by_service", "service": $('input[type=checkbox]:checked', '#portfolio_servicechecklist').val() },
-						success: function(response) {
-							if (response.sectors) {
-								$('#portfolio_sectordiv').show();
-								$('#portfolio_sectorchecklist li').hide();
-								sectors = response.sectors.split(',');
-								for (i = 0; i < sectors.length; i++) { 
-									$('#portfolio_sector-'+sectors[i]).show();
-								}
+				// show/hide sectors, locations and types depending on the chosen service
+				$.ajax({
+					type: 'POST',
+					url: ajaxurl,
+					dataType: 'json',
+					data: {"action": "get_filters_by_service", "service": $('input[type=checkbox]:checked', '#project_servicechecklist').val() },
+					success: function(response) {
+						if (response.sectors) {
+							$('#project_sectordiv').show();
+							$('#project_sectorchecklist li').hide();
+							sectors = response.sectors.split(',');
+							for (i = 0; i < sectors.length; i++) { 
+								$('#project_sector-'+sectors[i]).show();
 							}
-							else 
-								$('#portfolio_sectordiv').hide();
 							
-							response.locations?$('#portfolio_locationdiv').show():$('#portfolio_locationdiv').hide();
-							response.types?$('#portfolio_typediv').show():$('#portfolio_typediv').hide();
-
-							return false;
-
+							$('#project_sectorchecklist li:hidden').each(function(){
+								$(this).find('input[type=checkbox]').prop('checked', false);
+							});
 						}
-					});
-				}).filter(':checked').change();
+						else 
+							$('#project_sectordiv').hide();
+						
+						if (response.locations)
+							$('#project_locationdiv').show()
+						else {
+							$('#project_locationdiv').hide();
+							$('#project_locationchecklist input[type=checkbox]').prop('checked', false);
+						}
+
+						return false;
+
+					}
+				});
+			}).filter(':checked').change();
 		});
 		</script>
 		<?php
@@ -78,7 +95,7 @@ add_action( 'wp_ajax_get_filters_by_service', 'mgad_ajax_get_filters_by_service'
 function mgad_ajax_get_filters_by_service() {
 	$result = array();
 	$rs_sectors = array();
-	$sectors = get_field('sectors', 'portfolio_service_'.$_POST['service']);
+	$sectors = get_field('sectors', 'project_service_'.$_POST['service']);
 	if ($sectors) { 
 		foreach ($sectors as $sector) {
 			$rs_sectors[] = $sector->term_id;
@@ -87,14 +104,9 @@ function mgad_ajax_get_filters_by_service() {
 	$result['sectors'] =  join(',', $rs_sectors);
 	
 	$rs_locations = array();
-	$locations = get_field('locations', 'portfolio_service_'.$_POST['service']);
+	$locations = get_field('locations', 'project_service_'.$_POST['service']);
 	if ($locations) 
 		$result['locations'] =  1;
-	
-	
-	// only show "Types" for "Graphics & branding" service
-	if ($_POST['service'] == '367')
-		$result['types'] = 1; 
 	
 	echo json_encode($result);
 	die();

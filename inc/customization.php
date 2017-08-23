@@ -312,4 +312,8 @@ function rlv_fix_order($order) {
 function be_excerpt_more($output) {}
 
 
-
+// REMOVE POST FORMATS
+add_action('after_setup_theme', 'mgad_remove_formats', 100);
+function mgad_remove_formats() {
+	remove_theme_support('post-formats');
+}

@@ -50,7 +50,7 @@ if (!function_exists('mgad_work')) {
 		$output .= '</div></div>';
 		
 		
-		$services = get_terms('portfolio_service');
+		$services = get_terms('project_service');
 		if( ! empty( $services ) ) {
 			$output .='<div class="filterable-filters-container expanded">';
 			$output .='<div class="be-row clearfix be-wrap zero-bottom be-no-space">';
@@ -71,20 +71,6 @@ if (!function_exists('mgad_work')) {
 					}
 					$output .= '</ul></div>';
 				}
-				
-				// only show "types" as "sectors" if the service is brand
-				if ($service->slug == 'branding') :
-					$types = get_terms('portfolio_type');
-					if (!empty($types) && !is_wp_error($types)) {
-						$output .= '<div class="lv2-filters type-filters">';
-						$output .= '<ul>';
-						$output .= '<li><a class="filter" data-filter="" href="#">'.__('All').'</a></li>'; 
-						foreach ($types as $type) {
-							$output .= '<li><a class="filter" data-filter=".'.$type->slug.'" href="#">'.$type->name.'</a></li>'; 
-						}
-						$output .= '</ul></div>';
-					}
-				endif;
 				
 				$locations = get_field('locations', $service);
 				if ($locations) { 
@@ -141,15 +127,14 @@ if (!function_exists('mgad_work')) {
 			$filter_classes = '';
 			$permalink = '';
 			
-			$services = mgad_get_terms('portfolio_service');
-			$sectors = mgad_get_terms('portfolio_sector');
-			$types = mgad_get_terms('portfolio_type');
-			$location = mgad_get_terms('portfolio_location');
+			$services = mgad_get_terms('project_service');
+			$sectors = mgad_get_terms('project_sector');
+			$location = mgad_get_terms('project_location');
 			
 			$location2 = get_field('project_location');
 			$large_client_story = get_field('large_client_story');
 			
-			$all_slugs = array_merge($services[1], $sectors[1], $types[1], $location[1]);
+			$all_slugs = array_merge($services[1], $sectors[1], $location[1]);
 			$filter_classes = join(' ', $all_slugs);
 			
 			
@@ -190,17 +175,6 @@ if (!function_exists('mgad_work')) {
 				endforeach;
 				$output .= '</div>';
 			endif;
-			
-			if (!empty($types[0])) :
-				$output .= '
-					<div class="ftitem-sector">';
-				$i = 0;
-				foreach ($types[0] as $sector_name) :
-					if ($i>0) $output .= ', ';
-					$output .= '<a href="#" class="ftitem-filter ftitem-filter-lv2" data-filter=".'.$types[1][$i++].'">'.$sector_name.'</a>';
-				endforeach;
-				$output .= '</div>';
-			endif;		
 			
 			if (!empty($location[0])) :
 				$output .= '<div class="ftitem-location"><a href="#" class="ftitem-filter ftitem-filter-lv3" data-filter=".'.join(', ', $location[1]).'">'.join(', ', $location[0]).'</a>';
@@ -377,7 +351,12 @@ if (!function_exists('mgad_updates')) {
 			$output .= '<span class="rc-item-date">' . get_the_date('m.d.y') . '</span>';
 			$output .= '<div class="clear"></div>';
 			$output .= '<h3 class="ftitem-title"><a href="'.$permalink.'">'.get_the_title().'</a></h3>';
-			$output .= '<div class="ftitem-author">By ' . get_the_author() . '</div>';
+			
+			$author_name = get_field('author_name');
+			if ($author_name) {
+				$output .= '<div class="ftitem-author">By ' . $author_name . '</div>';
+			}
+
 			$output .= '<div class="ftitem-excerpt">' . get_the_excerpt() . '</div>';
 			$output .= '</div>';
 			
@@ -439,7 +418,7 @@ function mgad_recent_news() {
 		<div class="be-row be-wrap clearfix zero-bottom be-no-space recent-news">
 			<div class="one-fourth column-block clearfix">
 				<h2><?php _e('News', 'mgad');?></h2>
-				<a class="be-button mediumbtn transbtn" href="<?php echo home_url();?>/news/">More News</a>
+				<a class="be-button mediumbtn transbtn" href="<?php echo home_url('/updates/#news');?>">More News</a>
 			</div>
 			<?php
 			while ( $the_query->have_posts() ) : $the_query->the_post();
@@ -584,10 +563,11 @@ function mgad_page_links($atts) {
 	$slugs = array_map('trim', explode(',', $atts['slugs']));
 	
 	$links = array(
-		'about' => array('About', '/about/'),
-		'people' => array('People', '/people/'),
-		'work' => array('Work', '/work/'),
-		'contact' => array('Contact Us', '/contact/')
+		'about' => array('About', home_url('/about/')),
+		'people' => array('People', home_url('/people/')),
+		'work' => array('Work', home_url('/work/')),
+		'updates' => array('Updates', home_url('/updates/')),
+		'contact' => array('Contact Us', home_url('/contact/'))
 	);
 	?>
 	<div class="be-row clearfix zero-bottom be-no-space">
@@ -609,3 +589,16 @@ function mgad_page_links($atts) {
 	<?php
 }
 add_shortcode('mgad_page_links', 'mgad_page_links');
+
+// "mgad_location" shortcode
+function mgad_location_shortcode( $atts ) {
+	$output = '<p itemscope itemtype="schema.org/PostalAddress">';
+	$output .= '<span itemprop="streetAddress">'.$atts['address'].'</span><br />';
+	if (!empty($atts['address_extra'])) $output .= '<span>'.$atts['address_extra'].'</span><br />';
+  $output .= '<span itemprop="addressLocality">'.$atts['locality'].'</span>, ';
+  $output .= '<span itemprop="addressRegion">'.$atts['region'].'</span> ';
+  $output .= '<span itemprop="postalCode">'.$atts['code'].'</span>';
+	$output .= '</p>';
+	return $output;
+}
+add_shortcode( 'mgad_location', 'mgad_location_shortcode' );

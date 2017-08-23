@@ -98,7 +98,7 @@ function mgad_get_project_related_projects($posts_num = 2) {
 			"
 			SELECT      posts.ID,
 									posts.post_date,
-									SUM(IF(termtax.taxonomy = 'portfolio_service', 20, 0) + IF(termtax.taxonomy IN ('portfolio_sector', 'portfolio_type', 'portfolio_anecdotal'), 5, 0)) as weight
+									SUM(IF(termtax.taxonomy = 'project_service', 20, 0) + IF(termtax.taxonomy IN ('project_sector', 'project_anecdotal'), 5, 0)) as weight
 			FROM        $wpdb->posts posts
 			INNER JOIN  $wpdb->term_relationships termrel
 									ON posts.ID = termrel.object_id

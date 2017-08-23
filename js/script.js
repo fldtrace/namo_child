@@ -96,11 +96,17 @@ function debounce( fn, threshold ) {
 				if (hash_filters[1]) initial_filters[1] = '.' + hash_filters[1];
 				if (hash_filters[2]) initial_filters[2] = '.' + hash_filters[2];
 				
-
+				
 				filterable.filter.find('.current_choice').removeClass('current_choice');
-				filterable.filter.find('.filter-lv1[data-filter="'+initial_filters[0]+'"]').trigger( 'click', [ true ] )
-					.siblings('.lv2-filters').find('a[data-filter="'+initial_filters[1]+'"]').trigger( 'click')
-					.siblings('.lv3-filters').find('a[data-filter="'+initial_filters[2]+'"]').trigger( 'click');
+				$initial_lv1 = filterable.filter.find('.filter-lv1[data-filter="'+initial_filters[0]+'"]');
+
+				$initial_lv1.trigger( 'click', [ true ] );
+				
+				if (initial_filters[1])
+					$initial_lv1.siblings('.lv2-filters').find('a[data-filter="'+initial_filters[1]+'"]').trigger( 'click');
+				
+				if (initial_filters[2])
+					$initial_lv1.siblings('.lv3-filters').find('a[data-filter="'+initial_filters[2]+'"]').trigger( 'click');
 					
 				filterable.applyfilters.click();
 			},			
@@ -232,7 +238,9 @@ function debounce( fn, threshold ) {
 				filterClasses = current_lv1 + current_lv3 + current_lv2;
 				
 				// if no filters selected, show all items
-				if (!filterClasses) filterClasses = '.ftitem';
+				if (!filterClasses) {
+					filterClasses = '.ftitem';
+				}
 				
 				// assign new current filter
 				filterable.filterClasses = filterClasses;
@@ -282,7 +290,7 @@ function debounce( fn, threshold ) {
 					filterable.grid.isotope();
 					
 					// load more items if needed 
-					methods.loadMore(filterable.imageinlistview);
+					methods.loadMore(filterable.imageinlistview && filterable.view == 'list');
 				}
 				
 				// update breadcrumbs 
@@ -311,10 +319,10 @@ function debounce( fn, threshold ) {
 					var $this = jQuery(this);
 					
 					reset = typeof reset !== 'undefined' ? reset : false;
+					
 	
 					// "reset" means scripted click, not real user click
 					if (!reset) {
-						
 						if ($(document.body).hasClass('mobile')) {
 							if ($this.hasClass('current_choice')) {
 								filterable.filter.toggleClass('showlv1');
@@ -457,7 +465,7 @@ function debounce( fn, threshold ) {
 			search: function() {
 				filterable.grid.isotope();
 				methods.updateBreadcrumbsSearch();
-				methods.loadMore(filterable.imageinlistview);
+				methods.loadMore(filterable.imageinlistview && filterable.view == 'list');
 			}
 
 		};

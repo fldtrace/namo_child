@@ -102,11 +102,12 @@ video {
 }
 .page-intro h1 {
 	font-size: 26px;
-	margin-bottom: 6px;
+	margin-bottom: 2px;
 }
 .page-intro h3 {
 	color: #000;
 	font-size: 15px;
+	margin-bottom: 10px;
 }
 .page-intro h2 {
 	color: #5E8BB5;
@@ -117,8 +118,14 @@ video {
 	font-family: 'Montserrat', sans-serif;
 	font-size: 30px;
 	font-weight: 100;
+	letter-spacing: 1px;
 	line-height: 1.35;
 	margin-top: 30px;
+}
+.page-intro .post-date {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 14px;
+	letter-spacing: 1px;	
 }
 
 .be-wide-wrap {
@@ -540,7 +547,8 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 }
 #bottom-widgets .et_bloom_submit_subscription .et_bloom_button_text {
 	font-family: 'Montserrat', sans-serif;
-	font-weight: 400 !important;
+	font-weight: 100 !important;
+	letter-spacing: 1px !important;
 }
 #bottom-widgets h2.et_bloom_success_message {
 	color: #888;
@@ -565,7 +573,8 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 .et_bloom .et_bloom_optin_1 .et_bloom_form_container h2 span, 
 .et_bloom .et_bloom_optin_1 .et_bloom_form_container h2 strong {
 	font-family: 'Montserrat', sans-serif !important;
-	font-weight: 400 !important;
+	font-weight: 100 !important;
+	letter-spacing: 1px !important;
 }
 
 #bottom-widgets .column-block:nth-child(4) .widget_text {
@@ -828,6 +837,9 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 .filters-label {
 	font-weight: 700;
 	margin-bottom: 0.8em;
+}
+.branding ~ .lv2-filters .filters-label {
+	display: none;
 }
 
 .current_choice ~ .lv2-filters,
@@ -1970,6 +1982,9 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 .page-links .about {
 	background-image: url(../images/about_bg.jpg);
 }
+.page-links .updates {
+	background-image: url(../images/updates_bg.jpg);
+}
 .page-links .people {
 	background-image: url(../images/people_bg.jpg);
 }
@@ -2278,6 +2293,117 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 	border: 1px solid #fff;
 	color: #fff;
 }
+
+
+/*****************
+	POST
+********************/
+.right-sidebar-page #content-wrap {
+	max-width: 980px;
+}
+.right-sidebar-page #page-content {
+	margin-right: 100px;
+	width: 640px;
+}
+#right-sidebar {
+	width: 240px;
+}
+.wp-caption img {
+	margin-bottom: 1em;
+	max-width: 100%;
+}
+.wp-caption .wp-caption-text {
+	font-style: normal;
+	font-size: 13px;
+	text-align: left;
+	padding: 4px 0 5px;
+}
+.blog-post p {
+	margin-bottom: 1em;
+}
+.blog-post .et_bloom_form_container {
+	background: none !important;
+}
+.blog-post .et_bloom_form_header,
+.blog-post .et_bloom_form_header .et_bloom_form_text {
+	padding: 0 !important;
+}
+.blog-post .et_bloom_form_header .et_bloom_form_text h2 {
+	color: #555;
+	font-family: 'Montserrat', sans-serif !important;
+	font-weight: 700 !important;
+	font-size: 16px !important;
+}
+.blog-post .et_bloom_form_header .et_bloom_form_text p {
+	color: #000;
+	font-family: "Palatino Linotype", "Open Sans", "Arial", sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	margin-top: 4px;
+}
+.blog-post  .et_bloom_form_content {
+	background: none !important;
+	padding: 20px 0 !important;
+	max-width: 400px;
+	display: table;	
+}
+.blog-post  .et_bloom_form_content form {
+	display: table;	
+}
+.blog-post .et_bloom_form_container .et_bloom_form_content .et_bloom_subscribe_email {
+	display: table-cell;
+	padding-right: 10px;
+	width: 100%;
+	float: none;
+	vertical-align: top;
+}
+.blog-post .et_bloom_form_container .et_bloom_form_content .et_bloom_subscribe_email.et_bloom_popup_input input {
+	border: 1px solid #555;
+	border-radius: 0;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 100;
+	font-size: 13px;
+	height: 26px;
+	padding: 0 5px !important;
+}
+.blog-post  .et_bloom_form_content .et_bloom_submit_subscription {
+	border: 1px solid #000;
+	border-radius: 0;
+	display: table-cell;
+	height: 26px;
+	width: auto;
+	padding: 0 5px !important;	
+	vertical-align: top;	
+}
+.blog-post  .et_bloom_form_content .et_bloom_submit_subscription .et_bloom_button_text {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 100 !important;
+	font-size: 14px;	
+}
+.blog-post .et_bloom_form_container .et_bloom_form_content h2.et_bloom_error_message {
+	display: table-row;
+	color: inherit;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 100;
+	font-size: 14px;
+	letter-spacing: 1px;
+	padding: 0;
+	margin-bottom: 10px !important;
+}
+.blog-post .et_bloom_form_container .et_bloom_form_content h2.et_bloom_error_message:after {
+	border: 0;
+	display: block;
+	position: static;
+	height: 8px;
+}
+.et_bloom h2.et_bloom_success_message.et_bloom_animate_message {
+	color: inherit;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 100;
+	font-size: 14px;
+	letter-spacing: 1px;
+}
+
 
 @media only screen and (max-width: 1279px) {
 	.ftitem {

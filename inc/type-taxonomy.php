@@ -39,6 +39,9 @@ function register_cpt_project() {
 	);
 
 	unregister_post_type( 'portfolio' );
+	unregister_taxonomy( 'portfolio_categories' );
+	unregister_taxonomy( 'portfolio_tags' );
+	
 	register_post_type( 'project', $args );
 }
 
@@ -77,7 +80,7 @@ function register_service_taxonomy( )
         'sort'                       => true
     );
 
-    register_taxonomy( 'portfolio_service', array( 'project' ), $args );
+    register_taxonomy( 'project_service', array( 'project' ), $args );
 }
 add_action( 'init', 'register_service_taxonomy');
 
@@ -115,48 +118,9 @@ function register_sector_taxonomy( )
         'sort'                       => true
     );
 
-    register_taxonomy( 'portfolio_sector', array( 'project' ), $args );
+    register_taxonomy( 'project_sector', array( 'project' ), $args );
 }
 add_action( 'init', 'register_sector_taxonomy');
-
-
-function register_type_taxonomy( )
-{
-    $labels = array(
-        'name'                       => _x( 'Types', 'Taxonomy General Name', 'mgad' ),
-        'singular_name'              => _x( 'Type', 'Taxonomy Singular Name', 'mgad' ),
-        'menu_name'                  => __( 'Types', 'mgad' ),
-        'all_items'                  => __( 'All items', 'mgad' ),
-        'parent_item'                => __( 'Parent Item', 'mgad' ),
-        'parent_item_colon'          => __( 'Parent Item Colon:', 'mgad' ),
-        'new_item_name'              => __( 'New Item Name', 'mgad' ),
-        'add_new_item'               => __( 'Add New Item', 'mgad' ),
-        'edit_item'                  => __( 'Edit Item', 'mgad' ),
-        'update_item'                => __( 'Update Item', 'mgad' ),
-        'view_item'                  => __( 'View Item', 'mgad' ),
-        'separate_items_with_commas' => __( 'Separate Items With Commas', 'mgad' ),
-        'choose_from_most_used'      => __( 'Choose From Most Used', 'mgad' ),
-        'popular_items'              => __( 'Popular Items', 'mgad' ),
-        'search_items'               => __( 'Search Items', 'mgad' ),
-        'not_found'                  => __( 'Not Found', 'mgad' ),
-    );
-
-    $args = array(
-        'labels'                     => $labels,
-        'hierarchical'               => true,
-        'public'                     => true,
-        'show_ui'                    => true,
-        'show_in_menu'               => true,
-        'show_admin_column'          => true,
-        'show_in_nav_menus'          => true,
-        'show_tagcloud'              => false,
-        'show_in_quick_edit'         => true,
-        'sort'                       => true
-    );
-
-    register_taxonomy( 'portfolio_type', array( 'project' ), $args );
-}
-add_action( 'init', 'register_type_taxonomy');
 
 
 function register_location_taxonomy( )
@@ -193,7 +157,7 @@ function register_location_taxonomy( )
         'sort'                       => true
     );
 
-    register_taxonomy( 'portfolio_location', array( 'project' ), $args );
+    register_taxonomy( 'project_location', array( 'project' ), $args );
 }
 add_action( 'init', 'register_location_taxonomy');
 
@@ -232,7 +196,7 @@ function register_anecdotal_taxonomy( )
         'sort'                       => true
     );
 
-    register_taxonomy( 'portfolio_anecdotal', array( 'project' ), $args );
+    register_taxonomy( 'project_anecdotal', array( 'project' ), $args );
 }
 add_action( 'init', 'register_anecdotal_taxonomy');
 
@@ -280,30 +244,49 @@ function register_cpt_team_manager() {
 	register_post_type( 'team_manager', $args );
 }
 
-
-// Add the custom columns to the book post type:
-add_filter( 'manage_project_posts_columns', 'mgad_custom_edit_project_columns' );
-function mgad_custom_edit_project_columns($columns) {
-	$columns['featured'] = __( 'Featured', 'mgad' );
+// ADD "Project Title 2" COLUMN TO ADMIN SCREEN
+add_filter('manage_project_posts_columns', 'mg_columns_head_only_project', 10);
+add_action('manage_project_posts_custom_column', 'mg_columns_content_only_project', 10, 2);
+ 
+function mg_columns_head_only_project($columns) {
+	$columns['taxonomy-project_sector'] = 'Sectors/Types';
+	array_splice( $columns, 2, 0, array('project_title_2' => 'Project Title 2') );
+	$columns['menu_order'] = 'Order';
 	return $columns;
 }
-
-// Add the data to the custom columns for the book post type:
-add_action( 'manage_project_posts_custom_column' , 'mgad_custom_project_column', 10, 2 );
-function mgad_custom_project_column( $column, $post_id ) {
-	switch ( $column ) {
-		case 'featured' :
-			if (get_field('project_featured', $post_id)) echo '<a href="'.admin_url('edit.php?post_type=project&featured=1').'">Featured</a>'; 
-			break;
-	}
+function mg_columns_content_only_project($column_name, $post_ID) {
+	global $post;
+  switch ($column_name) {
+    case 'menu_order':
+      echo $post->menu_order;
+      break;
+		case 'project_title_2':
+			the_field('project_title_2', $post_ID);
+		default:
+      break;
+   }
 }
 
+/**
+* make "ORDER" column sortable
+*/
+function mgad_order_column_register_sortable($columns){
+  $columns['menu_order'] = 'menu_order';
+  return $columns;
+}
+add_filter('manage_edit-portfolio_sortable_columns','mgad_order_column_register_sortable');
 
-add_filter( 'parse_query', 'mgad_admin_posts_filter' );
-function mgad_admin_posts_filter( $query ) {
-    global $pagenow;
-    if ( is_admin() && $pagenow=='edit.php' && isset($_GET['featured']) && $_GET['featured'] == '1') {
-        $query->query_vars['meta_key'] = 'project_featured';
-        $query->query_vars['meta_value'] = 1;
-    }
+//$wpdb->query("UPDATE $wpdb->term_taxonomy SET taxonomy = 'project_sector' WHERE taxonomy = 'portfolio_sector'");
+
+
+/**
+ * Completely disable archives for taxonomy.
+ */
+add_action('pre_get_posts', 'mgad_remove_taxonomy_archive');
+function mgad_remove_taxonomy_archive($query) {
+	if (is_admin()) return;
+
+	if (is_tax() || is_category()) {
+		$query->set_404();
+	}
 }
