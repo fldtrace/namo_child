@@ -285,7 +285,7 @@ if (!function_exists('be_row')) {
 		$class = ( isset( $no_wrapper ) &&  1 == $no_wrapper ) ? '' : $class ;
 	    $class .= ( isset( $no_margin_bottom ) &&  1 == $no_margin_bottom ) ? ' zero-bottom' : '' ;
 	    $class .= ( isset( $no_space_columns ) &&  1 == $no_space_columns ) ? ' be-no-space' : '' ;
-			$class .= ( isset( $wide_wrap ) &&  1 == $wide_wrap ) ? ' be-wide-wrap' : '' ;
+			$class .= ( isset( $wide_wrap ) &&  1 == $wide_wrap ) ? ' be-wrap-wide' : '' ;
 		
 		return '<div class="be-row clearfix '.$class.'">'.do_shortcode( $content ).'</div>';
 	}

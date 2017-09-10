@@ -279,14 +279,3 @@ add_filter('manage_edit-portfolio_sortable_columns','mgad_order_column_register_
 //$wpdb->query("UPDATE $wpdb->term_taxonomy SET taxonomy = 'project_sector' WHERE taxonomy = 'portfolio_sector'");
 
 
-/**
- * Completely disable archives for taxonomy.
- */
-add_action('pre_get_posts', 'mgad_remove_taxonomy_archive');
-function mgad_remove_taxonomy_archive($query) {
-	if (is_admin()) return;
-
-	if (is_tax() || is_category()) {
-		$query->set_404();
-	}
-}

@@ -48,6 +48,7 @@ function debounce( fn, threshold ) {
 		var filterable = $(el),
 		methods = {};
 
+
 		// Store a reference to the filterable object
 		$.data(el, "mgadFilterable", filterable);
 		
@@ -108,7 +109,7 @@ function debounce( fn, threshold ) {
 				if (initial_filters[2])
 					$initial_lv1.siblings('.lv3-filters').find('a[data-filter="'+initial_filters[2]+'"]').trigger( 'click');
 					
-				filterable.applyfilters.click();
+				methods.applyFilters();
 			},			
 			// update filterable breadcrumbs content when new filters are applied
 			updateBreadcrumbs: function() {
@@ -225,9 +226,7 @@ function debounce( fn, threshold ) {
 				}
 			},
 			applyFilters: function(e) {
-				// "apply filters" clicked
-				e.preventDefault();
-				
+			
 				// reset/empty search input
 				filterable.searchinput.val('');
 				
@@ -642,8 +641,8 @@ function debounce( fn, threshold ) {
 		
 
 	// sticky share box
-	$('<div id="sticky-sharing"></div>').wrapInner($('#project-sharing').clone()).insertAfter('#hero-section');
-	$('#project-sharing').waypoint({
+	$('<div id="sticky-sharing"></div>').wrapInner($('#post-sharing').clone()).appendTo('body');
+	$('#post-sharing').waypoint({
 		handler: function (direction) {
 			if (direction === 'down') {
 				$('#sticky-sharing').addClass('sticky');
@@ -651,7 +650,7 @@ function debounce( fn, threshold ) {
 				$('#sticky-sharing').removeClass('sticky');
 			}
 		},
-		offset: '-' + $('#header-wrap').data('sticky-height') + 'px'
+		offset: $('#header-wrap').data('sticky-height') + 'px'
 	});
 
 
@@ -660,6 +659,19 @@ function debounce( fn, threshold ) {
 			.find('.rc-item').wrap('<li></li>');
 	}
 	
+	
+	$('.result-loadmore a').click(function(){
+		$(this).parent().slideUp(200);
+		$('.page-loader').css('display', 'block');
+		$(this).parent().prev('.result-wrap').find('.sresult:gt(' + (parseInt($(this).data('show'))-1) + ')').each(function(){
+			$img = $(this).find('img');
+			$img.attr('src', $img.data('src'))
+				.attr('data-src','');
+		}).imagesLoaded(function(){
+			$('.page-loader').css('display', 'none');
+			$(this).slideDown(200);
+		});
+	});
 	
 
 	$(window).load(function(){

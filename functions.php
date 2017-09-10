@@ -143,12 +143,22 @@ remove_filter('the_content', 'do_shortcode', 7);
 // Filter to prevent empty <p> from shortcodes
 add_filter( 'the_content', 'tgm_io_shortcode_empty_paragraph_fix' );
 function tgm_io_shortcode_empty_paragraph_fix( $content ) {
- 
-    $array = array(
-        '<p>['    => '[',
-        ']</p>'   => ']',
-        ']<br />' => ']'
-    );
-    return strtr( $content, $array );
+	$array = array(
+			'<p>['    => '[',
+			']</p>'   => ']',
+			']<br />' => ']'
+	);
+	return strtr( $content, $array );
 }
 
+/**
+ * Completely disable archives for taxonomy.
+ */
+add_action('pre_get_posts', 'mgad_remove_taxonomy_archive');
+function mgad_remove_taxonomy_archive($query) {
+	if (is_admin()) return;
+
+	if (is_tax() || is_category()) {
+		$query->set_404();
+	}
+}

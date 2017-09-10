@@ -45,30 +45,29 @@ while ( have_posts() ) : the_post(); ?>
 							<div class="post-details">
 								<div class="post-content">
 									<?php
-										if( !is_search() ) {
-											the_content( __( 'Continue Reading ->', 'be-themes' ) );
-										}
-										if( is_single() ): 
-											$args = array(
-											'before'           => '<div class="pages_list margin-40">',
-											'after'            => '</div>',
-											'link_before'      => '',
-											'link_after'       => '',
-											'next_or_number'   => 'next',
-											'nextpagelink'     => __('Next >','be-themes'),
-											'previouspagelink' => __('< Prev','be-themes'),
-											'pagelink'         => '%',
-											'echo'             => 1 );
-											wp_link_pages( $args );
+									the_content();
 
-											echo '<div class="post-tags">';
-											the_tags();
-											echo '</div>';
-											
-											echo do_shortcode('[et_bloom_inline optin_id="optin_2"]');
-										endif; 
+									$args = array(
+									'before'           => '<div class="pages_list margin-40">',
+									'after'            => '</div>',
+									'link_before'      => '',
+									'link_after'       => '',
+									'next_or_number'   => 'next',
+									'nextpagelink'     => __('Next >','be-themes'),
+									'previouspagelink' => __('< Prev','be-themes'),
+									'pagelink'         => '%',
+									'echo'             => 1 );
+									wp_link_pages( $args );
 									?>
 								</div>
+								<?php
+								echo '<div class="post-tags">';
+								the_tags();
+								echo '</div>';
+								
+								echo do_shortcode('[et_bloom_inline optin_id="optin_2"]');
+								?>
+								
 							</div>
 							<div class="clearfix"></div>
 						</div>

@@ -256,7 +256,7 @@ function mgad_get_profile_related_updates($posts_num = 4) {
 	return $post_ids;	
 }
 
-
+// add project title 2 to acf fields (make it easier to differientiate projects with same title)
 add_filter('acf/fields/post_object/result/name=focus', 'mgad_acf_post_object_customize', 10, 4);
 add_filter('acf/fields/relationship/result', 'mgad_acf_post_object_customize', 10, 4);
 function mgad_acf_post_object_customize($title, $p, $field, $post) {

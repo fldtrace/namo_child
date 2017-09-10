@@ -76,7 +76,7 @@ while (have_posts() ) : the_post();
 						</div>
 					</div>
 					<div class="be-section clearfix project-details">
-						<div class="be-row be-wide-wrap clearfix zero-bottom be-no-space">
+						<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space">
 							<div class="one-fourth column-block be-column-pad">
 								<h1 class="project-title-1"><?php the_title();?></h1>
 								<?php mgad_print($project_title_2,'<h2 class="project-title-2">','</h2>');?>
@@ -132,7 +132,7 @@ while (have_posts() ) : the_post();
 						
 						<?php 
 						if ($feature_section) : ?>
-							<div class="be-row be-wide-wrap clearfix zero-bottom be-no-space project-feature-section">
+							<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space project-feature-section">
 								<?php mgad_print($feature_quote, '<div class="one-fourth column-block be-column-pad"><div class="project-feature-quote">', '</div></div>');?>
 								<div class="<?php echo $feature_quote?'three-fourth':'one-col';?> column-block">
 									<div class="project-feature flexslider-wrap">
@@ -244,7 +244,7 @@ while (have_posts() ) : the_post();
 									<?php _e('Related Projects');?>
 								</div>
 							</div>
-							<div class="be-row be-wide-wrap clearfix zero-bottom be-no-space rp-list">
+							<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space rp-list">
 								<div class="one-fourth column-block rp-project-titles expanded">
 									<i class="icon-down-open"></i>
 									<ul>

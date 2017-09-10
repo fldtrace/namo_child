@@ -29,7 +29,7 @@ while ( have_posts() ) : the_post(); ?>
 				</div>
 
 				<div class="be-section profile-b1 clearfix">
-					<div class="be-row be-wide-wrap clearfix">
+					<div class="be-row be-wrap-wide clearfix">
 						<?php
 						$headshot = get_field('headshot_image');
 						$headshot_img = wp_get_attachment_image_src($headshot, 'team-thumbnail');
@@ -56,12 +56,12 @@ while ( have_posts() ) : the_post(); ?>
 								<?php mgad_print($email_address, '<a class="be-button smallbtn" href="mailto:', '">Contact</a>');?>
 								<?php mgad_print($linkedin_url, '<a class="profile-linkedin" href="', '" target="_blank"><i class="icon-linkedin-circled"></i></a>');?>
 							</div>
-							<a href="<?php echo home_url('/people/');?>" class="profile-exit"><i class="icon-cancel"></i></a>
+							<a href="<?php echo home_url('/people/');?>" class="profile-exit"><i class="icon-x"></i></a>
 						</div>
 					</div>
 				</div>
 				<div class="be-section profile-b2 clearfix">
-					<div class="be-row be-wide-wrap clearfix">
+					<div class="be-row be-wrap-wide clearfix">
 						<div class="profile-b2-left clearfix">
 							<div class="profile-bio">
 								<h3>Bio</h3>
@@ -125,7 +125,7 @@ while ( have_posts() ) : the_post(); ?>
 						<div class="be-row be-wrap clearfix">
 							<h3>Selected Work</h3>
 						</div>
-						<div class="be-row be-wide-wrap clearfix">
+						<div class="be-row be-wrap-wide clearfix">
 							<ul class="selected-work">
 								<?php
 								foreach ($selected_work as $project_id) : 

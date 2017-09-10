@@ -142,7 +142,7 @@ if (!function_exists('mgad_work')) {
 			$image_size = $large_client_story?'work-masonry-wide':'work-masonry';
 			$image_size_class = $large_client_story?'wide':'';
 			
-			$attachment_thumb=wp_get_attachment_image_src( $attachment_id, $image_size);
+			$attachment_thumb = wp_get_attachment_image_src( $attachment_id, $image_size);
 			
 			$permalink = get_permalink() ; 
 			
@@ -151,7 +151,7 @@ if (!function_exists('mgad_work')) {
 					
 			$output .='<div class="ftitem '.$filter_classes.' '.$image_size_class.'">';
 			$output .= '<div class="ftitem-inner clearfix">';
-			$output .= '<a class="ftitem-img-wrap" href="'.$permalink.'"><img class="ftitem-img" src="" data-src="'.$attachment_thumb[0].'" width="'. $$attachment_thumb[1] .'" height="'.$attachment_thumb[2].'" alt /></a>';
+			$output .= '<a class="ftitem-img-wrap" href="'.$permalink.'"><img class="ftitem-img" src="" data-src="'.$attachment_thumb[0].'" width="'. $attachment_thumb[1] .'" height="'.$attachment_thumb[2].'" alt /></a>';
 			$output .= '<h3 class="ftitem-title"><a href="'.$permalink.'">'.get_the_title();
 			if ($second_title) $output .= '<span class="ftitem-title2">'.$second_title.'</span>';
 			$output .= '</a></h3>';
@@ -186,7 +186,7 @@ if (!function_exists('mgad_work')) {
 		wp_reset_postdata();
 		$output .='</div></div></div>'; //end filterable-grid
 		
-		if( $items_per_page != '-1' || $items_per_page == $the_query->found_posts ) {
+		if( $items_per_page != '-1' && $items_per_page < $the_query->found_posts ) {
 			$output .='<div class="filterable-load-more load-hidden"><a class="be-shortcode mediumbtn be-button" href="#">Load More</a></div>';
 		}
 		$output .='</div>'; //end filterable-container
@@ -316,7 +316,6 @@ if (!function_exists('mgad_updates')) {
 		$the_query = new WP_Query( $args );
 		while ( $the_query->have_posts() ) : $the_query->the_post();
 			$filter_classes = '';
-			$permalink = '';
 			
 			$categories = mgad_get_terms('category');
 			
@@ -342,7 +341,7 @@ if (!function_exists('mgad_updates')) {
 			
 			if (!$lv1_term || !$lv2_term) continue;
 
-			$output .='<div class="ftitem rc-item '.$filter_classes.' '.$image_size_class.'">';
+			$output .='<div class="ftitem rc-item '.$filter_classes.'">';
 			$output .= '<div class="ftitem-inner clearfix">';
 			$output .= '<a class="ftitem-img-wrap" href="'.$permalink.'"><img class="ftitem-img" src="" data-src="'.$attachment_thumb[0].'" width="'. $$attachment_thumb[1] .'" height="'.$attachment_thumb[2].'" alt /></a>';
 			$output .= '<div class="ftitem-details">';
@@ -365,7 +364,7 @@ if (!function_exists('mgad_updates')) {
 		wp_reset_postdata();
 		$output .='</div></div></div>'; //end filterable-grid
 		
-		if( $items_per_page != '-1' || $items_per_page == $the_query->found_posts ) {
+		if( $items_per_page != '-1' && $items_per_page < $the_query->found_posts ) {
 			$output .='<div class="filterable-load-more load-hidden"><a class="be-shortcode mediumbtn be-button" href="#">Load More</a></div>';
 		}
 		$output .='</div>'; //end filterable-container
@@ -388,7 +387,7 @@ function mgad_social_sharing() {
 
 	ob_start();
 	?>
-	<div id="project-sharing" class="social-sharing">
+	<div id="post-sharing" class="social-sharing">
 		<a target="_blank" href="http://www.facebook.com/sharer.php?u=<?php echo urlencode($post_url);?>" title="Share on Facebook"><i class="icon-mgad-facebook"></i><i class="icon-mgad-facebook active"></i></a>
 		<a target="_blank" href="https://twitter.com/home?status=<?php echo urlencode($post_url);?>"><i class="icon-mgad-twitter"></i><i class="icon-mgad-twitter active"></i></a>
 		<a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode($post_url);?>&title=<?php echo urlencode($post_title);?>"><i class="icon-mgad-linkedin"></i><i class="icon-mgad-linkedin active"></i></a>
@@ -401,6 +400,10 @@ function mgad_social_sharing() {
 add_shortcode('mgad_social_sharing', 'mgad_social_sharing');
 
 
+
+/**************************************
+		RECENT NEWS SHORTCODE
+**************************************/
 function mgad_recent_news() {
 	ob_start();
 	
@@ -456,6 +459,10 @@ function mgad_recent_news() {
 add_shortcode('mgad_recent_news', 'mgad_recent_news');
 
 
+
+/**************************************
+		RECENT BLOG POSTS SHORTCODE
+**************************************/
 function mgad_recent_blog_posts() {
 	ob_start();
 	
@@ -516,6 +523,9 @@ add_shortcode('mgad_recent_blog_posts', 'mgad_recent_blog_posts');
 
 
 
+/**************************************
+		PEOPLE SHORTCODE
+**************************************/
 function mgad_people() {
 	ob_start();
 	
@@ -555,6 +565,10 @@ function mgad_people() {
 add_shortcode('mgad_people', 'mgad_people');
 
 
+
+/**************************************
+		PAGE LINKS SHORTCODE
+**************************************/
 function mgad_page_links($atts) {
 	$atts = shortcode_atts( array(
 		'slugs' => 'about,work,contact',
@@ -590,7 +604,10 @@ function mgad_page_links($atts) {
 }
 add_shortcode('mgad_page_links', 'mgad_page_links');
 
-// "mgad_location" shortcode
+
+/**************************************
+		LOCATION SHORTCODE
+**************************************/
 function mgad_location_shortcode( $atts ) {
 	$output = '<p itemscope itemtype="schema.org/PostalAddress">';
 	$output .= '<span itemprop="streetAddress">'.$atts['address'].'</span><br />';
@@ -602,3 +619,77 @@ function mgad_location_shortcode( $atts ) {
 	return $output;
 }
 add_shortcode( 'mgad_location', 'mgad_location_shortcode' );
+
+
+
+/**************************************
+		NEWS RELATED NEWS SHORTCODE -- not finished
+**************************************/
+function mgad_post_related_posts() {
+	ob_start();
+	
+	$args = array(
+		'post_type' => 'post',
+		'category_name' => in_category('news')?'news':'blog',
+		'status' => 'publish',
+		'posts_per_page' => 4
+	);
+
+	$the_query = new WP_Query( $args );
+	if ( $the_query->have_posts() ) : ?>
+		<div class="related-posts-widget">
+			<h6>Related News</h6>
+			<?php
+			while ( $the_query->have_posts() ) : $the_query->the_post();
+				$img_id = get_post_thumbnail_id();
+				$img = wp_get_attachment_image_src($img_id, 'news-thumbnail');
+				
+				$categories = get_the_category();
+				$cat = NULL;
+
+				foreach ($categories as $category) {
+					if (!empty($category->category_parent))	$cat = $category;
+				}
+				?>
+				<div class="rc-item">
+					<a class="rc-item-img" href="<?php echo $permalink;?>"><img src="<?php echo $img[0];?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt=""></a>
+					<a class="rc-item-cat" href="<?php echo get_category_link($cat->term_id);?>"><?php echo $cat->name;?></a>
+					<br>
+					<a class="rc-item-title" href="<?php echo $permalink;?>"><?php the_title();?></a>
+				</div>
+				<?php	
+			endwhile;
+			?>
+		</div>
+		<?php
+	endif;
+		
+	return ob_get_clean();		
+}	
+add_shortcode('mgad_post_related_posts', 'mgad_post_related_posts');
+
+
+/**************************************
+		NEWS RELATED NEWS SHORTCODE -- not finished
+**************************************/
+function mgad_post_tags() {
+	ob_start();
+	
+	$tags = get_the_tags();
+	if ($tags) : ?>
+		<div class="post-tags-widget">
+			<ul>
+				<?php
+				foreach($tags as $tag) : ?>
+					<li><a href="<?php echo get_term_link($tag->term_id);?>"><?php echo $tag->name;?></a></li>
+					<?php	
+				endforeach;
+				?>
+			</ul>
+		</div>
+		<?php
+	endif;
+		
+	return ob_get_clean();		
+}	
+add_shortcode('mgad_post_tags', 'mgad_post_tags');
