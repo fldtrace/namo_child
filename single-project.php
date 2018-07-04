@@ -6,7 +6,7 @@
 get_header();
 while (have_posts() ) : the_post();
 	$hero_image_id = get_field('project_hero_image');
-	$hero_image = wp_get_attachment_image_src($hero_image_id, 'work-hero');
+	$hero_image = wp_get_attachment_image_src($hero_image_id, 'very-large');
 	
 	$project_title = get_the_title();
 	$project_color = get_field('project_color');
@@ -131,8 +131,14 @@ while (have_posts() ) : the_post();
 						</div>
 						
 						<?php 
-						if ($feature_section) : ?>
-							<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space project-feature-section">
+						if ($feature_section) : 
+							foreach ($feature_section as $slide) {
+								if ($slide['slide_type'] == '2') $feature_has_imagemap = true;
+							}
+							
+							$feature_quote = false;
+							?>
+							<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space project-feature-section <?php echo $feature_has_imagemap?'has-imagemap':'';?>">
 								<?php mgad_print($feature_quote, '<div class="one-fourth column-block be-column-pad"><div class="project-feature-quote">', '</div></div>');?>
 								<div class="<?php echo $feature_quote?'three-fourth':'one-col';?> column-block">
 									<div class="project-feature flexslider-wrap">
@@ -145,11 +151,18 @@ while (have_posts() ) : the_post();
 														if ($slide['slide_type'] == '1') : 
 															$img = wp_get_attachment_image_src($slide['image'], 'full');
 															?>
-															<div class="img-zoom">
-																<img src="<?php echo esc_attr($img[0]);?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt="">
-																<a class="zoom-btn" href="<?php echo $img[0];?>"></a>
+															<div class="slide-img">
+																<div class="img-zoom">
+																	<img src="<?php echo esc_attr($img[0]);?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt="">
+																	<a class="zoom-btn" href="<?php echo $img[0];?>"></a>
+																</div>
+																<?php mgad_print($slide['image_caption'], '<div class="caption">', '</div>');?>			
 															</div>
-															<?php mgad_print($slide['image_caption'], '<div class="caption">', '</div>');?>															
+															<?php
+														elseif ($slide['slide_type'] == '2') : ?>
+															<div class="slide-imgmap">
+																<?php echo do_shortcode($slide['html']);?>
+															</div>
 															<?php
 														else :
 															echo do_shortcode($slide['html']);
@@ -261,27 +274,16 @@ while (have_posts() ) : the_post();
 										<?php
 										foreach ($related_projects as $related_project) : ?>
 											<li class="clearfix">
-												<div class="rp-project-images flexslider-wrap">
+												<div class="rp-project-images">
 													<?php
-													$rp_imgs = get_field('project_images', $related_project);
-													if ($rp_imgs) :	?>
-														<div class="flexslider">
-															<ul class="slides">
-																<?php
-																foreach ($rp_imgs as $rp_img) : 
-																	$img = wp_get_attachment_image_src( $rp_img['image'], 'related-project');
-																	$img_full = wp_get_attachment_image_src( $rp_img['image'], 'full');
-																	?>
-																	<li>
-																		<div class="img-zoom">
-																			<img src="<?php echo esc_attr($img[0]);?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt="">
-																			<a class="zoom-btn" href="<?php echo $img_full[0];?>"></a>
-																		</div>
-																	</li>
-																	<?php
-																endforeach;
-																?>
-															</ul>
+													$img_id = get_post_thumbnail_id($related_project);
+													if ($img_id) :
+														$img = wp_get_attachment_image_src( $img_id, 'related-project');
+														$img_full = wp_get_attachment_image_src( $img_id, 'full');
+														?>
+														<div class="img-zoom">
+															<img src="<?php echo esc_attr($img[0]);?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt="">
+															<a class="zoom-btn" href="<?php echo $img_full[0];?>"></a>
 														</div>
 														<?php
 													endif;

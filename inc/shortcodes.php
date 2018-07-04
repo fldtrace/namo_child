@@ -46,7 +46,7 @@ if (!function_exists('mgad_work')) {
 		$output .= '<div class="breadcrumbs">';
 		$output .= '<div class="be-row clearfix be-wrap zero-bottom be-no-space">';
 		$output .= '<h1>'.__('Work', 'mgad').'</h1>';
-		$output .= '<a class="toggle-filters mediumbtn be-button transbtn expanded" href="#"><span>Filter</span><i class="icon-plus"></i><i class="icon-cancel"></i></a>';
+		$output .= '<a class="toggle-filters mediumbtn be-button transbtn expanded" href="#"><span>Filter</span><i class="icon-up-open"></i><i class="icon-down-open"></i></a>';
 		$output .= '</div></div>';
 		
 		
@@ -111,7 +111,7 @@ if (!function_exists('mgad_work')) {
 				<div class="filterable-table-head clearfix">
 					<span class="ftitem-title"><a class="sort" data-order="" data-orderby="title" href="#">Project <i class="icon-up-open"></i><i class="icon-down-open"></i></a></span>
 					<span class="ftitem-service"><a class="sort" data-order="" data-orderby="lv1" href="#">Service <i class="icon-up-open"></i><i class="icon-down-open"></i></a></span>
-					<span class="ftitem-sector">Type</span>
+					<span class="ftitem-sector"><a>Type</a></span>
 					<span class="ftitem-location"><a class="sort" data-order="" data-orderby="lv3" href="#">Location <i class="icon-up-open"></i><i class="icon-down-open"></i></a></span>
 				</div>';
 		
@@ -245,7 +245,7 @@ if (!function_exists('mgad_updates')) {
 		$output .= '<div class="breadcrumbs">';
 		$output .= '<div class="be-row clearfix be-wrap zero-bottom be-no-space">';
 		$output .= '<h1>'.__('Updates', 'mgad').'</h1>';
-		$output .= '<a class="toggle-filters mediumbtn be-button transbtn expanded" href="#"><span>Filter</span><i class="icon-plus"></i><i class="icon-cancel"></i></a>';
+		$output .= '<a class="toggle-filters mediumbtn be-button transbtn expanded" href="#"><span>Filter</span><i class="icon-up-open"></i><i class="icon-down-open"></i></a>';
 		$output .= '</div></div>';
 		
 		
@@ -388,10 +388,10 @@ function mgad_social_sharing() {
 	ob_start();
 	?>
 	<div id="post-sharing" class="social-sharing">
-		<a target="_blank" href="http://www.facebook.com/sharer.php?u=<?php echo urlencode($post_url);?>" title="Share on Facebook"><i class="icon-mgad-facebook"></i><i class="icon-mgad-facebook active"></i></a>
-		<a target="_blank" href="https://twitter.com/home?status=<?php echo urlencode($post_url);?>"><i class="icon-mgad-twitter"></i><i class="icon-mgad-twitter active"></i></a>
-		<a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode($post_url);?>&title=<?php echo urlencode($post_title);?>"><i class="icon-mgad-linkedin"></i><i class="icon-mgad-linkedin active"></i></a>
-		<a target="_blank" href="mailto:?&body=<?php echo urlencode($post_url);?>"><i class="icon-mgad-mail"></i><i class="icon-mgad-mail active"></i></a>
+		<a target="_blank" href="http://www.facebook.com/sharer.php?u=<?php echo $post_url;?>" title="Share on Facebook"><i class="icon-mgad-facebook"></i><i class="icon-mgad-facebook active"></i></a>
+		<a target="_blank" href="https://twitter.com/home?status=<?php echo $post_url;?>"><i class="icon-mgad-twitter"></i><i class="icon-mgad-twitter active"></i></a>
+		<a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo $post_url;?>&title=<?php echo $post_title;?>"><i class="icon-mgad-linkedin"></i><i class="icon-mgad-linkedin active"></i></a>
+		<a target="_blank" href="mailto:?body=<?php echo $post_url;?>"><i class="icon-mgad-mail"></i><i class="icon-mgad-mail active"></i></a>
 	</div>
 	<?php
 
@@ -570,37 +570,68 @@ add_shortcode('mgad_people', 'mgad_people');
 		PAGE LINKS SHORTCODE
 **************************************/
 function mgad_page_links($atts) {
-	$atts = shortcode_atts( array(
-		'slugs' => 'about,work,contact',
-	),$atts );
+	ob_start();
 	
 	$slugs = array_map('trim', explode(',', $atts['slugs']));
 	
 	$links = array(
-		'about' => array('About', home_url('/about/')),
-		'people' => array('People', home_url('/people/')),
-		'work' => array('Work', home_url('/work/')),
-		'updates' => array('Updates', home_url('/updates/')),
-		'contact' => array('Contact Us', home_url('/contact/'))
+		'about' => array(
+			'title' => 'About', 
+			'url' => home_url('/about/'),
+			'style' => ''
+		),
+		'people' => array(
+			'title' => 'People', 
+			'url' => home_url('/people/'),
+			'style' => ''
+		),
+		'work' => array(
+			'title' => 'Work', 
+			'url' => home_url('/work/'),
+			'style' => ''
+		),
+		'updates' => array(
+			'title' => 'Updates', 
+			'url' => home_url('/updates/'),
+			'style' => ''
+		),
+		'contact' => array(
+			'title' => 'Contact Us', 
+			'url' => home_url('/contact/'),
+			'style' => ''
+		)
 	);
+	
+	foreach ($slugs as $slug) {
+		$bg_color = get_field($slug . '_bg_color', 'option');
+
+		if ($bg_color)
+			$links[$slug]['style'] .= 'background-color:' . $bg_color . ';';
+		
+		$bg_image = get_field($slug . '_bg_image', 'option');
+		if ($bg_image)
+			$links[$slug]['style'] .= 'background-image:url(' . $bg_image . ');';
+	}
+	
 	?>
 	<div class="be-row clearfix zero-bottom be-no-space">
 		<div class="one-half column-block">
-			<a class="<?php echo $slugs[0];?>" href="<?php echo $links[$slugs[0]][1];?>"><span><?php echo $links[$slugs[0]][0];?></span></a>
+			<a class="<?php echo $slugs[0];?>" href="<?php echo $links[$slugs[0]]['url'];?>" style="<?php echo $links[$slugs[0]]['style'];?>"><span><?php echo $links[$slugs[0]]['title'];?></span></a>
 		</div>
 		<div class="one-half column-block <?php echo sizeof($slugs)>2?'has-two':'';?>">
-			<a class="<?php echo $slugs[1];?>" href="<?php echo $links[$slugs[1]][1];?>"><span><?php echo $links[$slugs[1]][0];?></span></a>
+			<a class="<?php echo $slugs[1];?>" href="<?php echo $links[$slugs[1]]['url'];?>" style="<?php echo $links[$slugs[1]]['style'];?>"><span><?php echo $links[$slugs[1]]['title'];?></span></a>
 
 			<?php 
 			if ($slugs[2]) { ?>
 				<br>
-				<a class="<?php echo $slugs[2];?>" href="<?php echo $links[$slugs[2]][1];?>"><span><?php echo $links[$slugs[2]][0];?></span></a>
+				<a class="<?php echo $slugs[2];?>" href="<?php echo $links[$slugs[2]]['url'];?>" style="<?php echo $links[$slugs[2]]['style'];?>"><span><?php echo $links[$slugs[2]]['title'];?></span></a>
 				<?php
 			}
 			?>
 		</div>
 	</div>
 	<?php
+	return ob_get_clean();
 }
 add_shortcode('mgad_page_links', 'mgad_page_links');
 
@@ -670,7 +701,7 @@ add_shortcode('mgad_post_related_posts', 'mgad_post_related_posts');
 
 
 /**************************************
-		NEWS RELATED NEWS SHORTCODE -- not finished
+		POST TAGS SHORTCODE
 **************************************/
 function mgad_post_tags() {
 	ob_start();
@@ -693,3 +724,28 @@ function mgad_post_tags() {
 	return ob_get_clean();		
 }	
 add_shortcode('mgad_post_tags', 'mgad_post_tags');
+
+
+
+/**************************************
+		CALL TO ACTION SHORTCODE (Ask us anything. - Contact)
+**************************************/
+function mgad_cta() { 
+	ob_start();
+	?>
+	<div class="be-section clearfix" data-headerscheme="background--light" style="background-color: #d22630;" >
+		<div class="be-section-pad clearfix" style="padding-top:10px;padding-bottom:10px;">
+			<div class="be-row clearfix be-wrap ">
+				<div class="one-col column-block clearfix  " style="">
+					<div class="call-to-action be-shortcode clearfix " data-animation="fadeIn" style="background: ">
+						<h4 class="action-content" style="color:#ffffff;">Ask us anything.</h4>
+						<a class="mediumbtn be-button rounded action-button " href="/contact/" style="border-style: solid; border-width: 1px; border-color: #ffffff; background-color: inherit; color: #ffffff;" data-bg-color="inherit" data-hover-bg-color="#000000" data-color="#ffffff" data-hover-color="#ffffff" data-border-color="#ffffff" data-hover-border-color="#000000" >Contact Us</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+add_shortcode('mgad_cta', 'mgad_cta');

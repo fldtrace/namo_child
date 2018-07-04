@@ -53,6 +53,12 @@ if((!empty($header_transparent) && isset($header_transparent) && $header_transpa
 	<div class="main-nav">
 		<?php mgad_get_header_navigation();?>
 	</div>
+	<div class="search-box">
+		<form role="search" method="get" class="searchform" action="<?php echo site_url();?>">
+			<input placeholder="SEARCH MGA&D" value="" name="s" class="s" type="text">			
+			<button class="search-submit" value="" type="submit"><i class="font-icon icon-right-open-big"></i></button>
+		</form>
+	</div>
 	<div id="header-inner-wrap" class="<?php echo $header_class; ?>" <?php echo $full_screen_header_scheme; ?>>
 		<?php
 			extract(be_themes_calculate_logo_height());
@@ -78,7 +84,10 @@ if((!empty($header_transparent) && isset($header_transparent) && $header_transpa
 						<div class="menu-controls sliderbar-menu-controller right" title="Sidebar Menu Controller"><i class="font-icon icon-menu"></i></div>
 				<?php } ?>
 				<?php be_themes_get_header_woocommerce_cart_widget(); ?>
-				<?php be_themes_get_header_search_form_widget(); ?>
+				
+				<div class="header-search-controls">
+					<i class="search-btn icon-search font-icon"></i>
+				</div>
 			</div>
 		</div>
 		<div class="clearfix">

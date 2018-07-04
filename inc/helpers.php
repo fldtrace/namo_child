@@ -147,6 +147,7 @@ function mgad_get_project_related_news($posts_num = 4) {
 	// search with project title 
 	$related_query = new WP_Query( array( 
 		's' => '"'.$project_title.'"',
+		'post__not_in' => array($post->ID),
 		'post_type' => 'post',
 		'posts_per_page' => $posts_num,
 		'ignore_sticky_posts' => true,
@@ -158,13 +159,14 @@ function mgad_get_project_related_news($posts_num = 4) {
 	
 	$post_ids = $related_query->posts;
 	
+	
 	// if not enough posts found, search with project second title 
 	if (sizeof($post_ids) < $posts_num) :
 		$related_query = new WP_Query( array( 
 			's' => '"'.$project_title_2.'"',
 			'post_type' => 'post',
 			'posts_per_page' => $posts_num - sizeof($post_ids),
-			'post__not_in' => $post_ids,
+			'post__not_in' => array_merge($post_ids, array($post->ID)),
 			'ignore_sticky_posts' => true,
 			'fields' => 'ids'
 		));
@@ -173,6 +175,7 @@ function mgad_get_project_related_news($posts_num = 4) {
 			relevanssi_do_query($related_query);
 	
 		$post_ids_2 = $related_query->posts;
+		
 		$post_ids = array_merge($post_ids, $post_ids_2);
 	endif;
 	
@@ -201,19 +204,19 @@ function mgad_get_project_related_news($posts_num = 4) {
 			'operator' => 'OR',
 			'post_type' => 'post',
 			'posts_per_page' => $posts_num - sizeof($post_ids),
-			'post__not_in' => $post_ids,
+			'post__not_in' => array_merge($post_ids, array($post->ID)),
 			'ignore_sticky_posts' => true,
 			'fields' => 'ids'
 		));
 		
 		if (function_exists('relevanssi_do_query'))
-			relevanssi_do_query($related_query);		
+			relevanssi_do_query($related_query);	
+
 		$post_ids_2 = $related_query->posts;
 		$post_ids = array_merge($post_ids, $post_ids_2);
 		
 	endif;
 	
-
 	set_transient('prj_rel_news_' . $post->ID, $post_ids, 60 * 60 * 24 * 2);
 	
 	return $post_ids;
@@ -241,6 +244,7 @@ function mgad_get_profile_related_updates($posts_num = 4) {
 	$related_query = new WP_Query( array( 
 		's' => '"'.$profile_title.'"',
 		'post_type' => 'post',
+		'post__not_in' => array($post->ID),
 		'posts_per_page' => $posts_num,
 		'ignore_sticky_posts' => true,
 		'fields' => 'ids'
