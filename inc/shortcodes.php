@@ -1,4 +1,34 @@
 <?php
+
+/**************************************
+		WORK FOCUS SECTION
+**************************************/
+if (!function_exists('mgad_work_menu')) {
+	function mgad_work_menu() { 
+		if (have_rows('work_menu')) {
+			?>
+			<div class="be-row clearfix zero-bottom be-no-space work-menu">
+				<?php
+				while (have_rows('work_menu')) {
+					the_row();
+					$category = get_sub_field('category');
+					$img_id = get_sub_field('image');
+					$img =  wp_get_attachment_image_url($img_id, 'full');
+					?>
+					<div class="one-sixth clearfix">
+						<a class="work-menu-item" href="<?php echo site_url('/work/');?>#<?php echo $category->slug;?>" style="background-image:url(<?php echo $img;?>)"><span><?php echo $category->name;?></span></a>
+					</div>
+					<?php
+				}
+				?>
+			</div>
+			<?php
+		}
+	}
+	add_shortcode( 'mgad_work_menu' , 'mgad_work_menu' );
+}
+
+
 /**************************************
 		WORK FOCUS SECTION
 **************************************/

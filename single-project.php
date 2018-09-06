@@ -20,7 +20,7 @@ while (have_posts() ) : the_post();
 	$project_url_label = get_field('project_url_label');
 	$project_size = get_field('project_size');
 	$project_completion_year = get_field('project_completion_year');
-	$project_cert = get_field('project_cert');
+	$project_certs = get_field('project_cert');
 	
 	$project_problems = get_field('project_problems');
 	if (!$project_problems) $project_problems = get_field('project_objective');
@@ -34,7 +34,7 @@ while (have_posts() ) : the_post();
 	$solution = get_field('project_solution');
 	$solution_image = get_field('project_solution_image');
 	
-	$related_projects = get_field('related_projects');
+	//$related_projects = get_field('related_projects');
 	
 	$awards = get_field('project_awards');
 	?>
@@ -76,8 +76,9 @@ while (have_posts() ) : the_post();
 						</div>
 					</div>
 					<div class="be-section clearfix project-details">
-						<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space">
-							<div class="one-fourth column-block be-column-pad">
+					
+						<div class="be-row be-wrap-wide clearfix be-no-space project-mt-1 project-mb-3 project-intro">
+							<div class="one-fourth column-block be-column-pad project-titles">
 								<h1 class="project-title-1"><?php the_title();?></h1>
 								<?php mgad_print($project_title_2,'<h2 class="project-title-2">','</h2>');?>
 							</div>
@@ -106,7 +107,6 @@ while (have_posts() ) : the_post();
 										<?php mgad_print($project_material, '<li><i class="icon-mgad-material"></i>', '</li>');?>
 										<?php mgad_print($project_size, '<li><i class="icon-mgad-size"></i>', '</li>');?>
 										<?php mgad_print($project_completion_year, '<li><i class="icon-mgad-year"></i>', '</li>');?>
-										<?php mgad_print($project_cert, '<li><i class="icon-mgad-cert"></i>', '</li>');?>
 										
 										<?php
 										if ($project_certs) :
@@ -136,9 +136,8 @@ while (have_posts() ) : the_post();
 								if ($slide['slide_type'] == '2') $feature_has_imagemap = true;
 							}
 							
-							$feature_quote = false;
 							?>
-							<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space project-feature-section <?php echo $feature_has_imagemap?'has-imagemap':'';?>">
+							<div class="be-row be-wrap-wide clearfix be-no-space project-mb-3 project-feature-section <?php echo $feature_has_imagemap?'has-imagemap':'';?>">
 								<?php mgad_print($feature_quote, '<div class="one-fourth column-block be-column-pad"><div class="project-feature-quote">', '</div></div>');?>
 								<div class="<?php echo $feature_quote?'three-fourth':'one-col';?> column-block">
 									<div class="project-feature flexslider-wrap">
@@ -181,7 +180,7 @@ while (have_posts() ) : the_post();
 						endif;
 						?>
 						
-						<div class="be-row be-wrap clearfix zero-bottom be-no-space">
+						<div class="be-row be-wrap clearfix be-no-space project-mb-3">
 							<div class="one-col column-block be-column-pad">
 								<div class="project-holistic">
 									<?php the_field('project_holistic');?>
@@ -191,7 +190,7 @@ while (have_posts() ) : the_post();
 						
 						<?php
 						if ($callouts) : ?>
-							<div class="be-row clearfix zero-bottom be-no-space" style="background-color:<?php echo $project_color;?>">
+							<div class="be-row clearfix be-no-space project-mb-3" style="background-color:<?php echo $project_color;?>">
 								<div class="one-col be-column-pad column-block project-callouts flexslider-wrap">
 									<div class="flexslider">
 										<ul class="slides">
@@ -211,7 +210,7 @@ while (have_posts() ) : the_post();
 						
 						<?php
 						if ($images) : ?>
-							<div class="be-row clearfix zero-bottom be-no-space">
+							<div class="be-row clearfix be-no-space project-mb-3">
 								<div class="one-col column-block be-column-pad project-images flexslider-wrap">
 									<div class="flexslider">
 										<ul class="slides">
@@ -240,24 +239,46 @@ while (have_posts() ) : the_post();
 						
 						<?php
 						if ($solution) : ?>
-							<div class="be-row be-wrap clearfix zero-bottom be-no-space project-solution-wrap">
-								<div class="one-col column-block be-column-pad project-solution">
-									<?php echo $solution;?>
+							<div class="be-row be-wrap clearfix be-no-space project-solution-wrap project-mb-3">
+								<div class="one-col column-block be-column-pad">
+									<div class="project-solution">
+										<?php echo $solution;?>
+									</div>
 								</div>
 							</div>
 							<?php
 						endif;
 						?>
+
+						
+						<?php
+						if ($awards) : ?>
+							<div class="be-row be-wrap clearfix be-no-space project-awards project-mb-3">
+								<div class="one-col column-block">
+									<div class="awards-title"><img src="<?php echo get_stylesheet_directory_uri();?>/images/icon_awards.svg" width="45" alt="Awards"></div>
+									<ul>
+										<?php
+										foreach ($awards as $award) : ?>
+											<li><?php echo $award['award'];?></li>
+											<?php
+										endforeach;
+										?>
+									</ul>
+								</div>
+							</div>
+							<?php
+						endif;
+						?>		
 						
 						
 						<?php 
 						if ($related_projects) : ?>
 							<div class="be-row clearfix zero-bottom be-no-space section-title">
 								<div class="one-col column-block be-column-pad">
-									<?php _e('Related Projects');?>
+									<?php _e('Related Work');?>
 								</div>
 							</div>
-							<div class="be-row be-wrap-wide clearfix zero-bottom be-no-space rp-list">
+							<div class="be-row be-wrap-wide clearfix be-no-space rp-list project-mb-3">
 								<div class="one-fourth column-block rp-project-titles expanded">
 									<i class="icon-down-open"></i>
 									<ul>
@@ -302,29 +323,9 @@ while (have_posts() ) : the_post();
 							</div>
 							<?php
 						endif;
-						?>
+						?>												
 						
-						<?php
-						if ($awards) : ?>
-							<div class="be-row be-wrap clearfix zero-bottom be-no-space project-awards">
-								<div class="one-col column-block">
-									<div class="awards-title"><img src="<?php echo get_stylesheet_directory_uri();?>/images/icon_awards.svg" width="45" alt="Awards"></div>
-									<ul>
-										<?php
-										foreach ($awards as $award) : ?>
-											<li><?php echo $award['award'];?></li>
-											<?php
-										endforeach;
-										?>
-									</ul>
-								</div>
-							</div>
-							<?php
-						endif;
-						?>								
-								
-						
-						<div class="be-row be-no-space zero-bottom clearfix section-title section-title-light rc-title">
+						<div class="be-row be-no-space clearfix section-title section-title-light rc-title">
 							<div class="one-col column-block be-column-pad">
 								<?php 
 								if ($related_projects) 
@@ -340,13 +341,15 @@ while (have_posts() ) : the_post();
 						if (!$related_projects) : 
 							$post_ids = mgad_get_project_related_projects(2);
 							?>
-							<div class="be-row be-wrap clearfix zero-bottom be-no-space rc-pr-list">
+							<div class="be-row be-wrap clearfix be-no-space rc-pr-list project-mb-3">
 								<?php
 								foreach ($post_ids as $post_id) : 
 									$img_id = get_post_thumbnail_id($post_id);
 									$img = wp_get_attachment_image_src( $img_id, 'project-thumbnail');
 									
 									$permalink = get_permalink($post_id);
+									
+									$title_2 = get_field('project_title_2', $post_id);
 									?>
 									<div class="one-half column-block clearfix">
 										<div class="rc-item clearfix">
@@ -355,7 +358,12 @@ while (have_posts() ) : the_post();
 												<div class="rc-item-details-inner">
 													<a class="rc-parent" href="#"><?php _e('Work', 'mgad');?></a>
 													<div class="rc-item-title"><?php echo get_the_title($post_id);?></div>
-													<div class="rc-item-title-2"><?php echo get_the_title($post_id);?></div>
+													<?php
+													if ($title_2) { ?>
+														<div class="rc-item-title-2"><?php echo $title_2;?></div>
+														<?php
+													}
+													?>													
 													<a class="be-button mediumbtn redbtn" href="<?php echo $permalink;?>">See More</a>
 												</div>
 											</div>
@@ -369,7 +377,7 @@ while (have_posts() ) : the_post();
 						endif;
 						?>
 						
-						<div class="be-row be-wrap clearfix zero-bottom be-no-space rc-list">
+						<div class="be-row be-wrap clearfix be-no-space rc-list project-mb-3">
 							<?php
 							$post_ids = mgad_get_project_related_news(4);
 							foreach ($post_ids as $post_id) : 

@@ -37,6 +37,8 @@ if ( ! function_exists( 'mgad_add_scripts' ) ) {
 /* ---------------------------------------------  */
 if ( ! function_exists( 'mgad_add_styles' ) ) {
 	function mgad_add_styles() {
+		wp_enqueue_style( 'google-fonts', '//fonts.googleapis.com/css?family=Montserrat:600' );
+		
 		wp_enqueue_style( 'flexslider', get_template_directory_uri().'/css/flexslider.css' );
 		
 		wp_enqueue_style( 'mCustomScrollbar', get_stylesheet_directory_uri().'/css/jquery.mCustomScrollbar.min.css' );

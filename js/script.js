@@ -71,7 +71,7 @@ function debounce( fn, threshold ) {
 				filterable.imageinlistview = filterable.hasClass('updates-filterable')?true:false;
 				
 				filterable.activeFilters = {};
-				filterable.init = 0;
+				filterable.init = false;
 				
 				filterable.on('click', '.apply-filters', methods.applyFilters);
 				filterable.on('click', '.clear-filters', methods.clearFilters);
@@ -155,6 +155,7 @@ function debounce( fn, threshold ) {
 				// get all filtered item (without search)
 				$filteredItems_temp = filterable.grid.children(filterClasses);
 				
+				
 				$filteredItems = $();
 				
 				// if search input is not empty, filter the search results from the filtered items
@@ -201,11 +202,16 @@ function debounce( fn, threshold ) {
 					$hiddenItems.filter(':lt('+loadposts+')').each(function(){
 						var $this = $(this);
 						if (!$this.hasClass('loaded')) {
-							$img = $this.find('.ftitem-img');
+							$img_temp = $this.find('.ftitem-img');
+							
+							$img = $img_temp.clone().insertAfter($img_temp);
+							$img_temp.remove();
+							
 							$img.attr('src', $img.data('src'))
 								.attr('data-src','');
 						}
 					}).imagesLoaded(function(){
+						
 						var $this = $(this);
 						$this.addClass('loaded');
 						
@@ -245,7 +251,7 @@ function debounce( fn, threshold ) {
 				filterable.filterClasses = filterClasses;
 				
 				// if filterablegrid is not initiated
-				if (!filterable.init) {
+				if (!filterable.init) {					
 					filterable.grid.isotope({
 						itemSelector : '.ftitem',
 						filter: function() {
@@ -352,6 +358,8 @@ function debounce( fn, threshold ) {
 						
 						$this.siblings('.lv3-filters').find('.filter:eq(0)').addClass('current_choice');
 						$this.siblings('.lv2-filters').find('.filter:eq(0)').addClass('current_choice');
+						
+						filterable.filter.css('min-height', Math.max($this.siblings('.lv3-filters').outerHeight() + 53, $this.siblings('.lv2-filters').outerHeight()) + 'px');
 					}
 							
 					$this.addClass('current_choice');
@@ -508,40 +516,29 @@ jQuery(document).ready(function($){
 		});
 	};
 
-	$.fn.mgadZoomWrap = function() {
-		$(this).each(function(){	
-			if (!$(this).is('img')) return;
-			$(this).wrap('<div class="img-zoom"></div>')
-				.after('<a class="zoom-btn" href="'+$(this).attr('src')+'"></a>')
-				.siblings('.zoom-btn').mgadZoom(false);
-			
-		});
-	};
-	
+
 	$.fn.mgadZoom = function(enable_gallery) {
-		$(this).each(function(){	
-			$(this).magnificPopup({
-				type: 'image',
-				closeOnBgClick: true,
-				closeOnContentClick: true,
-				gallery:{
-					enabled: enable_gallery,
-					tCounter: ''
-				},
-				zoom: {
-					enabled: true,
-					opener: function(openerElement) {
-						return openerElement.is('img') ? openerElement : openerElement.prev('img');
-					}
-				},
-				image: {
-					titleSrc: function(item) {
-						var $caption = item.el.parent().next('.caption');
-						if ($caption.length)
-							return $caption.html();
-					}
+		$(this).magnificPopup({
+			type: 'image',
+			closeOnBgClick: true,
+			closeOnContentClick: true,
+			gallery:{
+				enabled: enable_gallery,
+				tCounter: ''
+			},
+			zoom: {
+				enabled: true,
+				opener: function(openerElement) {
+					return openerElement.is('img') ? openerElement : openerElement.prev('img');
 				}
-			});
+			},
+			image: {
+				titleSrc: function(item) {
+					var $caption = item.el.parent().next('.caption');
+					if ($caption.length)
+						return $caption.html();
+				}
+			}
 		});
 	};
 	
@@ -711,7 +708,7 @@ jQuery(document).ready(function($){
 	
 	
 	// initiate zoom buttons in project feature section
-	$('.project-feature .zoom-btn').mgadZoom(false);
+	$('.project-feature .zoom-btn').mgadZoom(true);
 	
 	// customize hotspot map for project feature section
 	$('.project-feature .hs-wrap').each(function(){
@@ -728,10 +725,15 @@ jQuery(document).ready(function($){
 	$('.project-images .zoom-btn').mgadZoom(true);
 	
 	// initiate zoom buttons in project solution section
-	$('.project-solution img').mgadZoomWrap();
+	$('.project-solution img').each(function(){	
+		if (!$(this).is('img')) return;
+		$(this).wrap('<div class="img-zoom"></div>')
+			.after('<a class="zoom-btn" href="'+$(this).attr('src')+'"></a>');
+	});
+	$('.project-solution .zoom-btn').mgadZoom(true);
 	
 	// initiate zoom buttons in related projects section
-	$('.rp-project-details .zoom-btn').mgadZoom(true);
+	$('.rp-project-details .zoom-btn').mgadZoom(false);
 		
 
 	// sticky share box

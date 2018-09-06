@@ -50,7 +50,7 @@ function mgad_get_project_related_projects($posts_num = 2) {
 		LEFT OUTER JOIN  $wpdb->postmeta postmeta
 								ON posts.ID = postmeta.post_id
 								AND postmeta.meta_key = 'project_title_2'
-		WHERE       posts.ID <> %s
+		WHERE       posts.ID <> %d
 								AND posts.post_type = 'project'
 								AND	posts.post_status = 'publish'
 								AND (posts.post_title LIKE %s
@@ -79,11 +79,12 @@ function mgad_get_project_related_projects($posts_num = 2) {
 									ON posts.ID = termrel.object_id
 			INNER JOIN  $wpdb->term_taxonomy termtax
 									ON termtax.term_taxonomy_id = termrel.term_taxonomy_id						
-			WHERE       posts.ID = %s
+			WHERE       posts.ID = %d
 			",
 			$post->ID
 		) ); 
 		$term_ids = implode(',', $term_ids);
+
 		
 		/* Find all projects that have same terms 
 			Different weights for taxonomies:
@@ -97,32 +98,32 @@ function mgad_get_project_related_projects($posts_num = 2) {
 		$post_ids_2 = $wpdb->get_col( $wpdb->prepare( 
 			"
 			SELECT      posts.ID,
-									posts.post_date,
 									SUM(IF(termtax.taxonomy = 'project_service', 20, 0) + IF(termtax.taxonomy IN ('project_sector', 'project_anecdotal'), 5, 0)) as weight
 			FROM        $wpdb->posts posts
 			INNER JOIN  $wpdb->term_relationships termrel
 									ON posts.ID = termrel.object_id
 			INNER JOIN  $wpdb->term_taxonomy termtax
 									ON termtax.term_taxonomy_id = termrel.term_taxonomy_id						
-			WHERE       posts.ID NOT IN %s
+			WHERE       posts.ID NOT IN (" . implode(',', $posts_not_in) . ")
 									AND posts.post_type = 'project'
 									AND	posts.post_status = 'publish'
 									AND termtax.term_id IN ($term_ids)
 			GROUP BY		posts.ID
 			ORDER BY		weight DESC, posts.post_date DESC
-			LIMIT 0,%s
-			",
-			'(' . implode(',', $posts_not_in) . ')',
-			$posts_num
+			LIMIT 0, $posts_num
+			"
 		) ); 
+		
 		
 		$post_ids = array_merge($post_ids, $post_ids_2);
 	endif;
 
+	
 	set_transient('prj_rel_prj_' . $post->ID, $post_ids, 60 * 60 * 24 * 2);
 	
 	return $post_ids;
 }
+
 
 /*
 	FIND A PROJECT'S RELATED NEWS, MUST BE USED IN A LOOP
@@ -140,22 +141,28 @@ function mgad_get_project_related_news($posts_num = 4) {
 	}
 	
 	
-	
 	$project_title = get_the_title();
 	$project_title_2 = get_field('project_title_2');
 
 	// search with project title 
 	$related_query = new WP_Query( array( 
-		's' => '"'.$project_title.'"',
-		'post__not_in' => array($post->ID),
+		's' => '"' . $project_title . '"',
 		'post_type' => 'post',
+		'post_status' => 'publish',
 		'posts_per_page' => $posts_num,
 		'ignore_sticky_posts' => true,
 		'fields' => 'ids'
 	));
-	
-	if (function_exists('relevanssi_do_query'))
+		
+	if (function_exists('relevanssi_do_query')) {
+		$related_query->query_vars['s'] = '"' . $project_title . '"';
+		$related_query->query_vars['post_type'] = 'post';
+		$related_query->query_vars['ignore_sticky_posts'] = true;
+		$related_query->query_vars['posts_per_page'] = $posts_num;
+		$related_query->query_vars['post__not_in'] = array($post->ID);
+		$related_query->query_vars['fields'] = 'ids';
 		relevanssi_do_query($related_query);
+	}
 	
 	$post_ids = $related_query->posts;
 	
@@ -166,13 +173,22 @@ function mgad_get_project_related_news($posts_num = 4) {
 			's' => '"'.$project_title_2.'"',
 			'post_type' => 'post',
 			'posts_per_page' => $posts_num - sizeof($post_ids),
-			'post__not_in' => array_merge($post_ids, array($post->ID)),
+			'post__not_in' => $post_ids,
 			'ignore_sticky_posts' => true,
 			'fields' => 'ids'
 		));
 		
-		if (function_exists('relevanssi_do_query'))
+		
+		
+		if (function_exists('relevanssi_do_query')) {
+			$related_query->query_vars['s'] = '"' . $project_title_2 . '"';
+			$related_query->query_vars['post_type'] = 'post';
+			$related_query->query_vars['ignore_sticky_posts'] = true;
+			$related_query->query_vars['posts_per_page'] = $posts_num - sizeof($post_ids);
+			$related_query->query_vars['post__not_in'] = $post_ids;
+			$related_query->query_vars['fields'] = 'ids';
 			relevanssi_do_query($related_query);
+		}
 	
 		$post_ids_2 = $related_query->posts;
 		
@@ -193,7 +209,7 @@ function mgad_get_project_related_news($posts_num = 4) {
 									ON termtax.term_taxonomy_id = termrel.term_taxonomy_id
 			INNER JOIN  $wpdb->terms terms
 									ON termtax.term_id = terms.term_id	
-			WHERE       posts.ID = %s
+			WHERE       posts.ID = %d
 			",
 			$post->ID
 		) ); 
@@ -204,13 +220,21 @@ function mgad_get_project_related_news($posts_num = 4) {
 			'operator' => 'OR',
 			'post_type' => 'post',
 			'posts_per_page' => $posts_num - sizeof($post_ids),
-			'post__not_in' => array_merge($post_ids, array($post->ID)),
+			'post__not_in' => $post_ids,
 			'ignore_sticky_posts' => true,
 			'fields' => 'ids'
 		));
 		
-		if (function_exists('relevanssi_do_query'))
-			relevanssi_do_query($related_query);	
+		if (function_exists('relevanssi_do_query')) {
+			$related_query->query_vars['s'] = implode(' ', $term_slugs);
+			$related_query->query_vars['operator'] = 'OR';
+			$related_query->query_vars['post_type'] = 'post';
+			$related_query->query_vars['ignore_sticky_posts'] = true;
+			$related_query->query_vars['posts_per_page'] = $posts_num - sizeof($post_ids);
+			$related_query->query_vars['post__not_in'] = $post_ids;
+			$related_query->query_vars['fields'] = 'ids';
+			relevanssi_do_query($related_query);
+		}
 
 		$post_ids_2 = $related_query->posts;
 		$post_ids = array_merge($post_ids, $post_ids_2);
@@ -218,6 +242,7 @@ function mgad_get_project_related_news($posts_num = 4) {
 	endif;
 	
 	set_transient('prj_rel_news_' . $post->ID, $post_ids, 60 * 60 * 24 * 2);
+	
 	
 	return $post_ids;
 }
@@ -244,14 +269,19 @@ function mgad_get_profile_related_updates($posts_num = 4) {
 	$related_query = new WP_Query( array( 
 		's' => '"'.$profile_title.'"',
 		'post_type' => 'post',
-		'post__not_in' => array($post->ID),
 		'posts_per_page' => $posts_num,
 		'ignore_sticky_posts' => true,
 		'fields' => 'ids'
 	));
 	
-	if (function_exists('relevanssi_do_query'))
+	if (function_exists('relevanssi_do_query')) {
+		$related_query->query_vars['s'] = '"'.$profile_title.'"';
+		$related_query->query_vars['post_type'] = 'post';
+		$related_query->query_vars['ignore_sticky_posts'] = true;
+		$related_query->query_vars['posts_per_page'] = $posts_num;
+		$related_query->query_vars['fields'] = 'ids';
 		relevanssi_do_query($related_query);
+	}
 	
 	$post_ids = $related_query->posts;
 
