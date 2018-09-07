@@ -19,7 +19,7 @@ while (have_posts() ) : the_post();
 	$project_url = get_field('project_url');
 	$project_url_label = get_field('project_url_label');
 	$project_size = get_field('project_size');
-	$project_completion_year = get_field('project_completion_year');
+	$project_date = get_field('project_date');
 	$project_certs = get_field('project_cert');
 	
 	$project_problems = get_field('project_problems');
@@ -106,7 +106,7 @@ while (have_posts() ) : the_post();
 										<?php mgad_print($project_industry, '<li><i class="icon-mgad-industry"></i>', '</li>');?>
 										<?php mgad_print($project_material, '<li><i class="icon-mgad-material"></i>', '</li>');?>
 										<?php mgad_print($project_size, '<li><i class="icon-mgad-size"></i>', '</li>');?>
-										<?php mgad_print($project_completion_year, '<li><i class="icon-mgad-year"></i>', '</li>');?>
+										<?php mgad_print($project_date, '<li><i class="icon-mgad-year"></i>', '</li>');?>
 										
 										<?php
 										if ($project_certs) :

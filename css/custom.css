@@ -758,12 +758,15 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 .work-intro {
 	color: #fff;
 	font-family: 'Montserrat', sans-serif;
-	font-size: 28px;
+	font-size: 35px;
 	font-weight: 600;
 	line-height: 1.4;
 }
 .work-intro .one-half:first-child {
 	padding-right: 0 !important;
+}
+.work-intro .one-half:last-child {
+	vertical-align: middle;
 }
 .work-intro .home-menu {
 	max-width: 818px;
@@ -1440,7 +1443,6 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 	text-align: center;
 	max-width: 640px;
 	margin: 0 auto;
-	hyphens: auto;
 }
 
 
@@ -1488,8 +1490,9 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 	padding-right: 0 !important;
 }
 .project-title-1 {
-	font-size: 30px;
-	line-height: 1.15;
+	font-size: 25px;
+	line-height: 1.3;
+	hyphens: auto;
 	margin-bottom: 0;
 	text-transform: uppercase;
 }
@@ -1682,10 +1685,10 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 	overflow: hidden;
 }
 .project-feature .img-zoom {
-	height: 435px;
+	height: 540px;
 }
 .project-feature .flexslider img {
-	height: 435px;
+	height: 540px;
 	width: auto;
 }
 .flexslider-wrap .flexslider .img-zoom img {
@@ -1747,6 +1750,7 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 }
 
 .project-feature-section.has-imagemap .caption {
+	border-bottom-width: 0; 
 	font-size: 20px;
 	line-height: 1.4;
 	padding: 35px 20px;
@@ -1901,19 +1905,19 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 
 .project-images .flex-direction-nav {
 	position: absolute;
-	height: 410px;
+	height: 540px;
 	width: 100%;
 	top: 0;
 	left: 0;
 }
 .project-images .flex-control-nav {
 	position: absolute;
-	top: 370px;
+	top: 500px;
 	bottom: auto;
 }
 .project-images .img-zoom {
 	display: block;
-	height: 410px;
+	height: 540px;
 	overflow: hidden;
 }
 
@@ -2157,13 +2161,14 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 .rc-pr-list .rc-item-details {
 	box-sizing: border-box;
 	border: 1px solid #d22630;
+	display: flex;
+	flex-direction: column;
 	flex: 1;
+	justify-content: center;
 	padding: 10px;
 }
 .rc-pr-list .rc-item-details-inner {
-	position: relative;
-	top: 50%;
-	transform: translateY(-45%);
+	
 }
 .rc-pr-list .rc-parent {
 	font-family: 'Montserrat', sans-serif;
@@ -3440,6 +3445,9 @@ body.header-transparent #header #header-inner-wrap #logo img.dark-scheme-logo {
 		line-height: 1.35;
 		height: auto;
 		padding-bottom: 50px;
+	}
+	.project-feature-section.has-imagemap .caption {
+		border-bottom-width: 1px; 
 	}
 	.project-holistic {
 		column-count: 1;

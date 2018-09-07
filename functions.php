@@ -19,7 +19,7 @@ add_image_size('team-thumbnail', 480, 480, true);
 add_image_size('related-project', 640, 450, true);
 add_image_size('news-thumbnail', 480, 320, true);
 add_image_size('news-thumbnail-sp', 480);
-add_image_size('project-thumbnail', 480, 390, true);
+add_image_size('project-thumbnail', 450, 390, true);
 
 /* ---------------------------------------------  */
 // Enqueue scripts
