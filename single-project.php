@@ -16,6 +16,7 @@ while (have_posts() ) : the_post();
 	
 	$project_location = get_field('project_location');
 	$project_industry = get_field('project_industry');
+	$project_material = get_field('project_material');
 	$project_url = get_field('project_url');
 	$project_url_label = get_field('project_url_label');
 	$project_size = get_field('project_size');
@@ -34,7 +35,7 @@ while (have_posts() ) : the_post();
 	$solution = get_field('project_solution');
 	$solution_image = get_field('project_solution_image');
 	
-	//$related_projects = get_field('related_projects');
+	$related_projects = get_field('related_projects');
 	
 	$awards = get_field('project_awards');
 	?>
@@ -133,7 +134,7 @@ while (have_posts() ) : the_post();
 						<?php 
 						if ($feature_section) : 
 							foreach ($feature_section as $slide) {
-								if ($slide['slide_type'] == '2') $feature_has_imagemap = true;
+								if ($slide['slide_type'] == '3') $feature_has_imagemap = true;
 							}
 							
 							?>
@@ -158,13 +159,14 @@ while (have_posts() ) : the_post();
 																<?php mgad_print($slide['image_caption'], '<div class="caption">', '</div>');?>			
 															</div>
 															<?php
-														elseif ($slide['slide_type'] == '2') : ?>
+														elseif ($slide['slide_type'] == '3') : ?>
 															<div class="slide-imgmap">
 																<?php echo do_shortcode($slide['html']);?>
 															</div>
 															<?php
-														else :
-															echo do_shortcode($slide['html']);
+														else : ?>
+															<?php echo do_shortcode($slide['html']);?>
+															<?php
 														endif;
 														?>
 													</li>
@@ -297,7 +299,7 @@ while (have_posts() ) : the_post();
 											<li class="clearfix">
 												<div class="rp-project-images">
 													<?php
-													$img_id = get_post_thumbnail_id($related_project);
+													$img_id = get_field('project_hero_image', $related_project);
 													if ($img_id) :
 														$img = wp_get_attachment_image_src( $img_id, 'related-project');
 														$img_full = wp_get_attachment_image_src( $img_id, 'full');

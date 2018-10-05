@@ -27,6 +27,7 @@ add_image_size('project-thumbnail', 450, 390, true);
 if ( ! function_exists( 'mgad_add_scripts' ) ) {
 	function mgad_add_scripts() {
 		wp_enqueue_script( 'mCustomScrollbar', get_stylesheet_directory_uri() . '/js/jquery.mCustomScrollbar.concat.min.js', array( 'be-themes-plugins-js'), FALSE, TRUE );
+		
 		wp_enqueue_script( 'mgad-script-js', get_stylesheet_directory_uri() . '/js/script.js', array( 'be-themes-plugins-js'), FALSE, TRUE );
 	}
 	add_action( 'wp_enqueue_scripts', 'mgad_add_scripts', 30 );

@@ -493,7 +493,7 @@ function debounce( fn, threshold ) {
 })(jQuery);
 
 jQuery(document).ready(function($){
-	
+		
 	// make inline image covering its container (emulate background-size:cover) 
 	$.fn.inlineCover = function() {
 		$(this).each(function(){
@@ -790,6 +790,11 @@ jQuery(document).ready(function($){
 			theme: 'rounded-dark'
 		});
 	}
+	
+	
+	$('.project-feature .fluid-width-video-wrapper').css('padding-top', 0).each(function(){
+		$(this).css('padding-top', $(this).closest('.slides').height() + 'px');
+	});
 
 
 	$(window).load(function(){
