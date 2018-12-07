@@ -57,6 +57,8 @@ get_header();
 				endif;
 				?>
 			</div> 
+			
+			<?php echo do_shortcode('[mgad_cta]');?>
 		</section>
 	</div>
 </section>					

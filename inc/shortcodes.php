@@ -48,7 +48,7 @@ if (!function_exists('mgad_work_focus')) {
 			<div class="focus-section work-focus" style="background-image: url(<?php echo $attachment[0];?>)">
 				<div class="focus-details">
 					<h2 class="focus-label">Focus</h2>
-					<h3 class="focus-title"><a href="<?php the_permalink();?>"><?php the_title();?> <span class="second_title"><?php the_field('project_title_2');?></span></a></h3>
+					<h3 class="focus-title"><a href="<?php the_permalink();?>"><?php the_title();?> <span class="second-title"><?php the_field('project_title_2');?></span></a></h3>
 					<a class="focus-button be-button mediumbtn" href="<?php the_permalink();?>">See Project</a>
 				</div>
 			</div>
@@ -127,7 +127,6 @@ if (!function_exists('mgad_work')) {
 		
 		$output .= '
 		<div class="filterable-grid-container">
-			<div class="">
 				<div class="filterable-grid-info clearfix">
 					<div class="filterable-breadcrumbs"></div>
 					<div class="filterable-results-count"></div>
@@ -145,7 +144,7 @@ if (!function_exists('mgad_work')) {
 					<span class="ftitem-location"><a class="sort" data-order="" data-orderby="lv3" href="#">Location <i class="icon-up-open"></i><i class="icon-down-open"></i></a></span>
 				</div>';
 		
-		$output .='<div class="filterable-grid clearfix">';
+		$output .='<div class="filterable-grid clearfix"><div class="grid-sizer"></div>';
 		$args = array(
 			'post_type' => 'project',
 			'status' => 'publish',
@@ -195,26 +194,34 @@ if (!function_exists('mgad_work')) {
 			endforeach;
 			$output .= '</div>';
 			
+			$output .= '
+				<div class="ftitem-sector">';
 			if (!empty($sectors[0])) :
-				$output .= '
-					<div class="ftitem-sector">';
 				$i = 0;
 				foreach ($sectors[0] as $sector_name) :
 					if ($i>0) $output .= ', ';
 					$output .= '<a href="#" class="ftitem-filter ftitem-filter-lv2" data-filter=".'.$sectors[1][$i++].'">'.$sector_name.'</a>';
 				endforeach;
-				$output .= '</div>';
 			endif;
+			$output .= '</div>';
 			
 			if (!empty($location[0])) :
-				$output .= '<div class="ftitem-location"><a href="#" class="ftitem-filter ftitem-filter-lv3" data-filter=".'.join(', ', $location[1]).'">'.join(', ', $location[0]).'</a>';
+				$output .= '<div class="ftitem-location">';
+				foreach ($location[0] as $key => $location_name) {
+					if ($key) $output .= ', ';
+					$output .= '<a href="#" class="ftitem-filter ftitem-filter-lv3" data-filter=".' . $location[1][$key] . '">' . $location_name . '</a>';
+				}
 				if ($location2) $output .= '<div>'.$location2.'</div>';
 				$output .='</div>';
 			endif;
 			$output .= '</div></div>';//end element
 		endwhile;
 		wp_reset_postdata();
-		$output .='</div></div></div>'; //end filterable-grid
+		$output .= '</div>'; //end filterable-grid
+		
+		$output .= '<div class="be-wrap"><div class="filterable-grid-msg"></div></div>';
+		
+		$output .= '</div>';
 		
 		if( $items_per_page != '-1' && $items_per_page < $the_query->found_posts ) {
 			$output .='<div class="filterable-load-more load-hidden"><a class="be-shortcode mediumbtn be-button" href="#">Load More</a></div>';
@@ -247,7 +254,13 @@ if (!function_exists('mgad_updates_focus')) {
 				<div class="focus-bg" style="background-image: url(<?php echo $attachment[0];?>)"></div>
 				<div class="focus-details">
 					<h3 class="focus-label"><a href="<?php the_permalink();?>"><?php the_title();?></a></h3>
-					<div class="focus-author focus-title">By <?php the_author();?></div>
+					<?php
+					$author_name = get_field('author_name');
+					if ($author_name) { ?>
+						<div class="focus-author focus-title">By <?php echo $author_name;?></div>
+						<?php
+					}
+					?>
 					<a class="focus-button be-button mediumbtn transbtn" href="<?php the_permalink();?>">Read More</a>
 				</div>
 			</div>
@@ -335,8 +348,8 @@ if (!function_exists('mgad_updates')) {
 						<a class="filterable-view-list filterable-view-button" href="#" data-view="list"><i></i></a>
 					</div>
 				</div>';
-		
-		$output .='<div class="filterable-grid clearfix">';
+				
+		$output .='<div class="filterable-grid clearfix"><div class="grid-sizer"></div>';
 		$args = array(
 			'post_type' => 'post',
 			'status' => 'publish',
@@ -465,7 +478,7 @@ function mgad_recent_news() {
 
 				$img_id = get_post_thumbnail_id();
 				
-				$img = wp_get_attachment_image_src($img_id, 'news-thumbnail-sp');
+				$img = wp_get_attachment_image_src($img_id, 'news-thumbnail');
 				
 				$permalink = get_permalink();
 				?>
@@ -499,7 +512,7 @@ function mgad_recent_blog_posts() {
 	$args = array(
 		'post_type' => 'post',
 		'status' => 'publish',
-		'category_name' => 'blog',
+		'category_name' => 'insights',
 		'posts_per_page' => 5,
 		'orderby' => 'date',
 		'order' => 'DESC'
@@ -526,7 +539,7 @@ function mgad_recent_blog_posts() {
 
 					$img_id = get_post_thumbnail_id();
 					
-					$img = wp_get_attachment_image_src($img_id, 'news-thumbnail-sp');
+					$img = wp_get_attachment_image_src($img_id, 'news-thumbnail');
 					
 					$permalink = get_permalink();
 					
@@ -602,59 +615,49 @@ add_shortcode('mgad_people', 'mgad_people');
 function mgad_page_links($atts) {
 	ob_start();
 	
-	$slugs = array_map('trim', explode(',', $atts['slugs']));
+	$links = array_map('trim', explode(',', $atts['links']));
 	
-	$links = array(
-		'about' => array(
-			'title' => 'About', 
-			'url' => home_url('/about/'),
-			'style' => ''
-		),
-		'people' => array(
-			'title' => 'People', 
-			'url' => home_url('/people/'),
-			'style' => ''
-		),
-		'work' => array(
-			'title' => 'Work', 
-			'url' => home_url('/work/'),
-			'style' => ''
-		),
-		'updates' => array(
-			'title' => 'Updates', 
-			'url' => home_url('/updates/'),
-			'style' => ''
-		),
-		'contact' => array(
-			'title' => 'Contact Us', 
-			'url' => home_url('/contact/'),
-			'style' => ''
-		)
-	);
+	$all_links = get_field('links', 'option');
 	
-	foreach ($slugs as $slug) {
-		$bg_color = get_field($slug . '_bg_color', 'option');
-
-		if ($bg_color)
-			$links[$slug]['style'] .= 'background-color:' . $bg_color . ';';
-		
-		$bg_image = get_field($slug . '_bg_image', 'option');
-		if ($bg_image)
-			$links[$slug]['style'] .= 'background-image:url(' . $bg_image . ');';
+	$link_array = array();
+	
+	foreach ($all_links as $link) {
+		if (in_array($link['title'], $links)) {
+			$style = '';
+			if ($link['background_color']) {
+				$style .= 'background-color:' . $link['background_color'] . ';';
+			}
+			if ($link['background_image']) {
+				$style .= 'background-image:url(' . $link['background_image'] . ');';
+			}
+			if ($link['text_color']) {
+				$style .= 'color: ' . $link['text_color'] . ';';
+			}
+			
+			$link_array[] = array(
+				'title' => $link['title'],
+				'url' => $link['link'],
+				'style' => $style
+			);	
+			
+		}
 	}
+
+	if(empty($link_array))
+		return;
 	
 	?>
 	<div class="be-row clearfix zero-bottom be-no-space">
 		<div class="one-half column-block">
-			<a class="<?php echo $slugs[0];?>" href="<?php echo $links[$slugs[0]]['url'];?>" style="<?php echo $links[$slugs[0]]['style'];?>"><span><?php echo $links[$slugs[0]]['title'];?></span></a>
+			<a class="<?php echo sanitize_title($link_array[0]['title']);?>" href="<?php echo $link_array[0]['url'];?>" style="<?php echo $link_array[0]['style'];?>"><span><?php echo $link_array[0]['title'];?></span></a>
 		</div>
-		<div class="one-half column-block <?php echo sizeof($slugs)>2?'has-two':'';?>">
-			<a class="<?php echo $slugs[1];?>" href="<?php echo $links[$slugs[1]]['url'];?>" style="<?php echo $links[$slugs[1]]['style'];?>"><span><?php echo $links[$slugs[1]]['title'];?></span></a>
+		<div class="one-half column-block <?php echo sizeof($link_array)>2?'has-two':'';?>">
+			<a class="<?php echo sanitize_title($link_array[1]['title']);?>" href="<?php echo $link_array[1]['url'];?>" style="<?php echo $link_array[1]['style'];?>"><span><?php echo $link_array[1]['title'];?></span></a>
 
 			<?php 
-			if ($slugs[2]) { ?>
+			if ($link_array[2]) { ?>
 				<br>
-				<a class="<?php echo $slugs[2];?>" href="<?php echo $links[$slugs[2]]['url'];?>" style="<?php echo $links[$slugs[2]]['style'];?>"><span><?php echo $links[$slugs[2]]['title'];?></span></a>
+				<a class="<?php echo sanitize_title($link_array[2]['title']);?>" href="<?php echo $link_array[2]['url'];?>" style="<?php echo $link_array[2]['style'];?>"><span><?php echo $link_array[2]['title'];?></span></a>
 				<?php
 			}
 			?>
@@ -691,7 +694,7 @@ function mgad_post_related_posts() {
 	
 	$args = array(
 		'post_type' => 'post',
-		'category_name' => in_category('news')?'news':'blog',
+		'category_name' => in_category('news')?'news':'insights',
 		'status' => 'publish',
 		'posts_per_page' => 4
 	);

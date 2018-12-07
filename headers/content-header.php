@@ -55,7 +55,7 @@ if((!empty($header_transparent) && isset($header_transparent) && $header_transpa
 	</div>
 	<div class="search-box">
 		<form role="search" method="get" class="searchform" action="<?php echo site_url();?>">
-			<input placeholder="SEARCH MGA&D" value="" name="s" class="s" type="text">			
+			<input placeholder="SEARCH" value="" name="s" class="s" type="text">			
 			<button class="search-submit" value="" type="submit"><i class="font-icon icon-right-open-big"></i></button>
 		</form>
 	</div>

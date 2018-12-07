@@ -12,16 +12,21 @@ while (have_posts() ) : the_post();
 	$project_color = get_field('project_color');
 	$project_title_2 = get_field('project_title_2');
 	
+	
 	$project_lead = get_field('project_lead');
 	
-	$project_location = get_field('project_location');
-	$project_industry = get_field('project_industry');
-	$project_material = get_field('project_material');
-	$project_url = get_field('project_url');
-	$project_url_label = get_field('project_url_label');
-	$project_size = get_field('project_size');
-	$project_date = get_field('project_date');
-	$project_certs = get_field('project_cert');
+	$project_fields = array();
+	
+	$project_fields['location'] = get_field('project_location');
+	$project_fields['credit'] = get_field('project_credit');
+	$project_fields['industry'] = get_field('project_industry');
+	$project_fields['material'] = get_field('project_material');
+	$project_fields['url'] = get_field('project_url');
+	$project_fields['url_label'] = get_field('project_url_label');
+	$project_fields['size'] = get_field('project_size');
+	$project_fields['date'] = get_field('project_date');
+	$project_fields['certs'] = get_field('project_cert');
+	
 	
 	$project_problems = get_field('project_problems');
 	if (!$project_problems) $project_problems = get_field('project_objective');
@@ -101,17 +106,23 @@ while (have_posts() ) : the_post();
 										endforeach;
 										?>
 									</div>
-									
+									<?php
+								endif;
+								?>
+								
+								<?php
+								if ($project_fields) : ?>
 									<ul class="project-fields">
-										<?php mgad_print($project_location, '<li><i class="icon-mgad-location"></i>', '</li>');?>
-										<?php mgad_print($project_industry, '<li><i class="icon-mgad-industry"></i>', '</li>');?>
-										<?php mgad_print($project_material, '<li><i class="icon-mgad-material"></i>', '</li>');?>
-										<?php mgad_print($project_size, '<li><i class="icon-mgad-size"></i>', '</li>');?>
-										<?php mgad_print($project_date, '<li><i class="icon-mgad-year"></i>', '</li>');?>
+										<?php mgad_print($project_fields['location'], '<li><i class="icon-mgad-location"></i>', '</li>');?>
+										<?php mgad_print($project_fields['credit'], '<li><i class="icon-mgad-credit"></i>', '</li>');?>
+										<?php mgad_print($project_fields['industry'], '<li><i class="icon-mgad-industry"></i>', '</li>');?>
+										<?php mgad_print($project_fields['material'], '<li><i class="icon-mgad-material"></i>', '</li>');?>
+										<?php mgad_print($project_fields['size'], '<li><i class="icon-mgad-size"></i>', '</li>');?>
+										<?php mgad_print($project_fields['date'], '<li><i class="icon-mgad-year"></i>', '</li>');?>
 										
 										<?php
-										if ($project_certs) :
-											foreach ($project_certs as $cert) : ?>
+										if ($project_fields['certs']) :
+											foreach ($project_fields['certs'] as $cert) : ?>
 												<li><i class="icon-mgad-cert"></i><?php echo $cert['certification'];?></li>
 												<?php
 											endforeach;
@@ -119,8 +130,8 @@ while (have_posts() ) : the_post();
 										?>
 										
 										<?php
-										if ($project_url) : ?>
-											<li><a href="<?php echo $project_url;?>" target="_blank"><i class="icon-mgad-link"></i><?php echo $project_url_label;?></a></li>
+										if ($project_fields['url']) : ?>
+											<li><a href="<?php echo $project_fields['url'];?>" target="_blank"><i class="icon-mgad-link"></i><?php echo $project_fields['url_label'];?></a></li>
 											<?php
 										endif;
 										?>
@@ -138,7 +149,7 @@ while (have_posts() ) : the_post();
 							}
 							
 							?>
-							<div class="be-row be-wrap-wide clearfix be-no-space project-mb-3 project-feature-section <?php echo $feature_has_imagemap?'has-imagemap':'';?>">
+							<div class="be-row be-wrap-wide clearfix be-no-space project-mb-3 project-feature-section project-media <?php echo $feature_has_imagemap?'has-imagemap':'';?>">
 								<?php mgad_print($feature_quote, '<div class="one-fourth column-block be-column-pad"><div class="project-feature-quote">', '</div></div>');?>
 								<div class="<?php echo $feature_quote?'three-fourth':'one-col';?> column-block">
 									<div class="project-feature flexslider-wrap">
@@ -180,6 +191,8 @@ while (have_posts() ) : the_post();
 							</div>
 							<?php
 						endif;
+
+						if( !empty(get_field('project_holistic')) ) {
 						?>
 						
 						<div class="be-row be-wrap clearfix be-no-space project-mb-3">
@@ -191,6 +204,7 @@ while (have_posts() ) : the_post();
 						</div>
 						
 						<?php
+						}
 						if ($callouts) : ?>
 							<div class="be-row clearfix be-no-space project-mb-3" style="background-color:<?php echo $project_color;?>">
 								<div class="one-col be-column-pad column-block project-callouts flexslider-wrap">
@@ -213,20 +227,28 @@ while (have_posts() ) : the_post();
 						<?php
 						if ($images) : ?>
 							<div class="be-row clearfix be-no-space project-mb-3">
-								<div class="one-col column-block be-column-pad project-images flexslider-wrap">
+								<div class="one-col column-block be-column-pad project-images project-media flexslider-wrap">
 									<div class="flexslider">
 										<ul class="slides">
 											<?php 
-											foreach ($images as $image) : 
-												$img = wp_get_attachment_image_src($image['image'], 'large');
-												$img_full = wp_get_attachment_image_src($image['image'], 'full');
-												?>
+											foreach ($images as $slide) : ?>
 												<li>
-													<div class="img-zoom">
-														<img src="<?php echo esc_attr($img[0]);?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt="">
-														<a class="zoom-btn" href="<?php echo $img_full[0];?>"></a>
-													</div>
-													<?php mgad_print($image['image_caption'], '<div class="caption">', '</div>');?>
+													<?php
+													if (!$slide['slide_type'] || $slide['slide_type'] == '1') {
+														$img = wp_get_attachment_image_src($slide['image'], 'large');
+														$img_full = wp_get_attachment_image_src($slide['image'], 'full');
+														?>
+														<div class="img-zoom">
+															<img src="<?php echo esc_attr($img[0]);?>" width="<?php echo $img[1];?>" height="<?php echo $img[2];?>" alt="">
+															<a class="zoom-btn" href="<?php echo $img_full[0];?>"></a>
+														</div>
+														<?php mgad_print($slide['image_caption'], '<div class="caption">', '</div>');?>
+														<?php
+													}
+													else if ($slide['slide_type'] == '2') {
+														echo do_shortcode($slide['video']);
+													}
+													?>
 												</li>
 												<?php
 											endforeach;

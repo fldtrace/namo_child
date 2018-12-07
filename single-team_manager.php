@@ -37,6 +37,15 @@ while ( have_posts() ) : the_post(); ?>
 						$pdf = get_field('pdf');
 						$email_address = get_field('email');
 						$linkedin_url = get_field('linkedin_url');
+						$twitter_url = get_field('twitter_url');
+						$googleplus_url = get_field('googleplus_url');
+						$dribble_url = get_field('dribble_url');
+						$tumblr_url = get_field('tumblr_url');
+						$instagram_url = get_field('instagram_url');
+						$flickr_url = get_field('flickr_url');
+						$youtube_url = get_field('youtube_url');
+						$vimeo_url = get_field('vimeo_url');
+						$blogger_url = get_field('blogger_url');
 						
 						$education = get_field('education');
 						
@@ -54,7 +63,19 @@ while ( have_posts() ) : the_post(); ?>
 							<div class="profile-links">
 								<?php mgad_print($pdf, '<a class="be-button smallbtn" href="', '">Download PDF</a>');?>
 								<?php mgad_print($email_address, '<a class="be-button smallbtn" href="mailto:', '">Contact</a>');?>
-								<?php mgad_print($linkedin_url, '<a class="profile-linkedin" href="', '" target="_blank"><i class="icon-linkedin-circled"></i></a>');?>
+								
+								<div class="profile-social-links">
+									<?php mgad_print($linkedin_url, '<a class="profile-linkedin" href="', '" target="_blank"><i class="icon-linkedin"></i></a>');?>
+									<?php mgad_print($twitter_url, '<a class="profile-twitter" href="', '" target="_blank"><i class="icon-twitter"></i></a>');?>
+									<?php mgad_print($googleplus_url, '<a class="profile-googleplus" href="', '" target="_blank"><i class="icon-gplus"></i></a>');?>
+									<?php mgad_print($dribble_url, '<a class="profile-dribble" href="', '" target="_blank"><i class="icon-dribbble2"></i></a>');?>
+									<?php mgad_print($tumblr_url, '<a class="profile-tumblr" href="', '" target="_blank"><i class="icon-tumblr"></i></a>');?>
+									<?php mgad_print($instagram_url, '<a class="profile-instagram" href="', '" target="_blank"><i class="icon-instagram"></i></a>');?>
+									<?php mgad_print($flickr_url, '<a class="profile-flickr" href="', '" target="_blank"><i class="icon-flickr"></i></a>');?>
+									<?php mgad_print($youtube_url, '<a class="profile-youtube" href="', '" target="_blank"><i class="icon-youtube"></i></a>');?>
+									<?php mgad_print($vimeo_url, '<a class="profile-vimeo" href="', '" target="_blank"><i class="icon-vimeo"></i></a>');?>
+									<?php mgad_print($blogger_url, '<a class="profile-blogger" href="', '" target="_blank"><i class="icon-blogger"></i></a>');?>
+								</div>
 							</div>
 							<a href="<?php echo home_url('/people/');?>" class="profile-exit"><i class="icon-x"></i></a>
 						</div>
@@ -155,7 +176,7 @@ while ( have_posts() ) : the_post(); ?>
 				
 				<div class="be-section page-links fullwidth clearfix">
 					<div class="be-section-pad clearfix">
-						<?php echo do_shortcode('[mgad_page_links slugs="people,work,contact"]');?>
+						<?php echo do_shortcode('[mgad_page_links links="About,Work,Contact Us"]');?>
 					</div>
 				</div>
 			</section>
